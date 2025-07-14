@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from mpl_toolkits.mplot3d import art3d  # Import for 3D patch objects
 
-from base_classes import Vector3D, Waypoint, EffectorKinematicState, EffectorWeaponState, ExplosiveType, ChassisType, DroneState
+from environment.base_classes import Vector3D, Waypoint, EffectorKinematicState, EffectorWeaponState, ExplosiveType, ChassisType, DroneState
 
-from utils import calculate_spherical_coordinates, calculate_delta_azimuth_delta_elevation
+from environment.utils import calculate_spherical_coordinates, calculate_delta_azimuth_delta_elevation
 
 class ScenarioRenderer:
     def __init__(self, domain_bb, sensitive_zones_bb, swarm_spawning_bb, swarm_intermediate_waypoints_bb,

@@ -2,12 +2,11 @@ import numpy as np
 import gymnasium as gym
 from gymnasium import spaces
 from collections import deque
+import time
 
-from base_classes import BoundingBox, Vector3D, ExplosiveType, ChassisType, EffectorWeaponState, DroneState
-from supporting_classes import SensitiveZone, Drone, Effector, Detection, ScenarioRenderer
-from utils import calculate_drones_zones_distance, control_effectors, drone_effector_aiming_distance_calculation, calculate_neutralization_probability, swarm_generate_drone_trajectory
-
-from neodynamics.interface import create_environment_server
+from environment.base_classes import BoundingBox, Vector3D, ExplosiveType, ChassisType, EffectorWeaponState, DroneState
+from environment.supporting_classes import SensitiveZone, Drone, Effector, Detection, ScenarioRenderer
+from environment.utils import calculate_drones_zones_distance, control_effectors, drone_effector_aiming_distance_calculation, calculate_neutralization_probability, swarm_generate_drone_trajectory
 
 class Environment(gym.Env):
     def __init__(self, render_mode="rgb_array"):
@@ -321,6 +320,3 @@ class Environment(gym.Env):
             self.renderer.update()
         else:
             return self.renderer.get_rgb_array()
-
-if __name__ == "__main__":
-    create_environment_server(Environment)

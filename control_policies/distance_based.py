@@ -3,8 +3,6 @@ import numpy as np
 
 from gymnasium import spaces
 
-from neodynamics.interface import create_agent_server
-
 class Agent:
     def __init__(self):
         self.swarm_drones_num = 50
@@ -32,8 +30,3 @@ class Agent:
         for _ in range(k):
             smallest_indices.append(heapq.heappop(heap)[1])
         return smallest_indices
-
-
-if __name__ == "__main__":
-    agent = Agent()
-    create_agent_server(agent)

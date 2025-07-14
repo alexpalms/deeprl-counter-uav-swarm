@@ -2,7 +2,7 @@ import numpy as np
 import math
 from bisect import bisect_left
 
-from base_classes import Vector3D, Waypoint
+from environment.base_classes import Vector3D, Waypoint
 
 
 def calculate_spherical_coordinates(target, origin):
