@@ -1,27 +1,30 @@
 import os
 import re
 import yaml
+import argparse
+from environment.environment import Environment
+from modifiers.metric_damage import RewardWrapper
 from copy import deepcopy
-import multiprocessing
-from train.misc import make_sb3_env, linear_schedule, AutoSave, StartingSteps, CustomMetrics, TrialEvalCallback
+from train.misc import make_sb3_env, linear_schedule, AutoSave, StartingSteps, CustomMetrics
 
 from train.custom_ppo_policy import CustomPPOPolicy
-from train.custom_sac_policy import CustomSACPolicy
 from train.custom_extractors import CustomFlatExtractor, CustomCombinedExtractor
 
-from neodynamics.interface import EnvironmentType
-
-from stable_baselines3 import PPO, SAC
+from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import EvalCallback, StopTrainingOnRewardThreshold, StopTrainingOnNoModelImprovement
 
-from utils.utils import update_keep_alive
 
-def learn(keep_alive_file, update_interval, env_addresses, num_envs, env_type, spaces_modifiers_config_file_path, reward_modifiers_config_file_path, train_config_in, optuna_trial=None):
-    # Start the keep-alive updater process
-    keep_alive_process = multiprocessing.Process(target=update_keep_alive, args=(keep_alive_file, update_interval), daemon=True)
-    keep_alive_process.start()
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config', type=str, default="./train/config.yaml", help='Type of control policy')
+    opt = parser.parse_args()
+    print(opt)
+
+    with open(opt.config, 'r') as file:
+        train_config_in = yaml.safe_load(file)
 
     train_config = deepcopy(train_config_in)
+    num_envs = train_config["num_envs"]
 
     local_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -37,7 +40,7 @@ def learn(keep_alive_file, update_interval, env_addresses, num_envs, env_type, s
 
     os.makedirs(model_folder, exist_ok=True)
 
-    env = make_sb3_env(env_addresses, num_envs, env_type, spaces_modifiers_config_file_path, reward_modifiers_config_file_path, seed=train_config["seed"], monitor_folder=monitor_folder)
+    env = make_sb3_env(Environment, RewardWrapper, num_envs, seed=train_config["seed"], monitor_folder=monitor_folder)
     print("Activated {} environment(s)".format(num_envs))
 
     # Policy param
@@ -67,19 +70,6 @@ def learn(keep_alive_file, update_interval, env_addresses, num_envs, env_type, s
         use_sde = train_config["use_sde"]
         sde_sample_freq = train_config["sde_sample_freq"]
         target_kl = train_config["target_kl"]
-    elif train_config["algo"] == "SAC":
-        buffer_size = train_config["buffer_size"]
-        learning_starts = train_config["learning_starts"]
-        batch_size = train_config["batch_size"]
-        tau = train_config["tau"]
-        train_freq = train_config["train_freq"]
-        gradient_steps = train_config["gradient_steps"]
-        ent_coef = train_config["ent_coef"]
-        target_update_interval = train_config["target_update_interval"]
-        target_entropy = train_config["target_entropy"]
-        use_sde = train_config["use_sde"]
-        sde_sample_freq = train_config["sde_sample_freq"]
-        use_sde_at_warmup = train_config["use_sde_at_warmup"]
     else:
         raise ValueError(f"Algorithm {train_config['algo']} not supported")
 
@@ -98,13 +88,6 @@ def learn(keep_alive_file, update_interval, env_addresses, num_envs, env_type, s
                         ent_coef=ent_coef, vf_coef=vf_coef, max_grad_norm=max_grad_norm,
                         use_sde=use_sde, sde_sample_freq=sde_sample_freq, target_kl=target_kl,
                         tensorboard_log=tensor_board_folder, device="cpu")
-        elif train_config["algo"] == "SAC":
-            agent = SAC(policy, env, verbose=1, buffer_size=buffer_size,
-                        gamma=gamma, batch_size=batch_size, learning_starts=learning_starts,
-                        learning_rate=learning_rate, tau=tau, train_freq=train_freq, gradient_steps=gradient_steps,
-                        ent_coef=ent_coef, target_update_interval=target_update_interval, target_entropy=target_entropy,
-                        use_sde=use_sde, sde_sample_freq=sde_sample_freq, use_sde_at_warmup=use_sde_at_warmup,
-                        policy_kwargs=policy_kwargs, tensorboard_log=tensor_board_folder, device="cpu")
     else:
         # Load the trained agent
         # Use regex to find the number after the latest underscore
@@ -121,13 +104,6 @@ def learn(keep_alive_file, update_interval, env_addresses, num_envs, env_type, s
                              vf_coef=vf_coef, max_grad_norm=max_grad_norm, use_sde=use_sde,
                              sde_sample_freq=sde_sample_freq, target_kl=target_kl,
                              tensorboard_log=tensor_board_folder, device="cpu")
-        elif train_config["algo"] == "SAC":
-            agent = SAC.load(model_checkpoint_path, env=env,
-                             gamma=gamma, learning_rate=learning_rate, buffer_size=buffer_size, batch_size=batch_size,
-                             learning_starts=learning_starts, tau=tau, train_freq=train_freq, gradient_steps=gradient_steps,
-                             ent_coef=ent_coef, target_update_interval=target_update_interval, target_entropy=target_entropy,
-                             use_sde=use_sde, sde_sample_freq=sde_sample_freq, use_sde_at_warmup=use_sde_at_warmup,
-                             policy_kwargs=policy_kwargs, tensorboard_log=tensor_board_folder, device="cpu")
         reset_num_timesteps = False
         callbacks.append(StartingSteps(starting_steps=starting_steps))
 
@@ -177,68 +153,35 @@ def learn(keep_alive_file, update_interval, env_addresses, num_envs, env_type, s
         num_eval_envs = evaluation_config["num_eval_envs"]
         assert num_eval_envs == 1 or env_type == EnvironmentType.STANDARD, "Evaluation must be done on a single environment for vectorized environments (custom monitor wrapper not supported yet)"
         eval_env = make_sb3_env(env_addresses[-num_eval_envs:], num_eval_envs, env_type, spaces_modifiers_config_file_path, reward_modifiers_config_file_path, monitor_folder=monitor_folder_eval, seed=train_config["seed"])
-        if "hypertune" in train_config and train_config["hypertune"]:
-            assert optuna_trial is not None, "Optuna trial must be provided for hyperparameter optimization"
-            eval_callback = TrialEvalCallback(
-                eval_env,
-                trial=optuna_trial,
-                n_eval_episodes=evaluation_config["n_eval_episodes"],
-                eval_freq=evaluation_config["frequency"],
-                deterministic=evaluation_config["deterministic"],
-            )
-        else:
-            eval_callback = EvalCallback(
-                eval_env,
-                n_eval_episodes=evaluation_config["n_eval_episodes"],
-                eval_freq=evaluation_config["frequency"],
-                deterministic=evaluation_config["deterministic"],
-                callback_on_new_best=callback_on_best,
-                callback_after_eval=stop_train_callback,
-                verbose=1,
-                render=False
-            )
+
+        eval_callback = EvalCallback(
+            eval_env,
+            n_eval_episodes=evaluation_config["n_eval_episodes"],
+            eval_freq=evaluation_config["frequency"],
+            deterministic=evaluation_config["deterministic"],
+            callback_on_new_best=callback_on_best,
+            callback_after_eval=stop_train_callback,
+            verbose=1,
+            render=False
+        )
+
         callbacks.append(eval_callback)
 
-    success = False
-    is_pruned = False
-    reward = None
+    # Train the agent
+    time_steps = training_stop_config["max_time_steps"]
+    agent.learn(total_timesteps=time_steps, reset_num_timesteps=reset_num_timesteps, callback=callbacks)
 
-    try:
-        # Train the agent
-        time_steps = training_stop_config["max_time_steps"]
-        agent.learn(total_timesteps=time_steps, reset_num_timesteps=reset_num_timesteps, callback=callbacks)
+    # Save the agent
+    new_model_checkpoint = "model_" + str(starting_steps + time_steps)
+    model_path = os.path.join(model_folder, new_model_checkpoint)
+    agent.save(model_path)
 
-        # Save the agent
-        new_model_checkpoint = "model_" + str(starting_steps + time_steps)
-        model_path = os.path.join(model_folder, new_model_checkpoint)
-        agent.save(model_path)
+    # Free memory
+    assert agent.env is not None
+    agent.env.close()
+    del agent.env
+    del agent
 
-        success = True
-        if "hypertune" in train_config and train_config["hypertune"]:
-            is_pruned = eval_callback.is_pruned
-            reward = eval_callback.last_mean_reward
-
-        # Free memory
-        assert agent.env is not None
-        agent.env.close()
-        del agent.env
-        del agent
-
-        if evaluation_config["active"]:
-            eval_env.close()
-            del eval_env
-
-    except (AssertionError, ValueError) as e:
-        print(e)
-        is_pruned = True
-        reward = None
-
-    return success, is_pruned, reward
-
-def train(keep_alive_file, update_interval, env_addresses, num_envs, env_type, spaces_modifiers_config_file_path, reward_modifiers_config_file_path, train_config_file_path):
-
-    with open(train_config_file_path, 'r') as file:
-        train_config = yaml.safe_load(file)
-
-    success, is_pruned, reward = learn(keep_alive_file, update_interval, env_addresses, num_envs, env_type, spaces_modifiers_config_file_path, reward_modifiers_config_file_path, train_config)
-    return success, is_pruned, reward
+    if evaluation_config["active"]:
+        eval_env.close()
+        del eval_env

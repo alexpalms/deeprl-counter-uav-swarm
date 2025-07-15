@@ -1,10 +1,6 @@
 import os
 import time
-import optuna
 from pathlib import Path
-from env_build_tools.env_factory import make_environment
-from env_build_tools.env_conversions import CpuVecEnvToSb3VecEnv, CpuVecEnvToGymEnv
-from modifiers.modifiers_factory import modify_environment_from_modifiers_config_file
 
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecEnv
@@ -12,12 +8,11 @@ from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3.common.callbacks import BaseCallback, EvalCallback
 import numpy as np
 from stable_baselines3.common.results_plotter import ts2xy, load_results
-
-from neodynamics.interface import EnvironmentType
+from gymnasium import Env as GymEnv
+from gymnasium import RewardWrapper
 
 # Make Stable Baselines3 Env function
-def make_sb3_env(env_addresses: list[str], num_envs: int, env_type: EnvironmentType,
-                 spaces_modifiers_config_file_path:str | None=None, reward_modifiers_config_file_path:str | None=None,
+def make_sb3_env(env_class: GymEnv, reward_wrapper_class: RewardWrapper, num_envs: int,
                  seed: int | None=None, allow_early_resets: bool=True, start_method: str | None=None, no_vec: bool=False,
                  use_subprocess: bool=True, monitor_folder: str="/tmp/invai/"):
     """
@@ -33,51 +28,33 @@ def make_sb3_env(env_addresses: list[str], num_envs: int, env_type: EnvironmentT
     if seed is None:
         seed = int(time.time())
 
-    if env_type == EnvironmentType.STANDARD:
-        def _make_sb3_env(rank):
-            def _init():
-                env = make_environment(env_addresses[rank])
-                env, _, _ = modify_environment_from_modifiers_config_file(env, spaces_modifiers_config_file_path, reward_modifiers_config_file_path)
+    def _make_sb3_env(rank):
+        def _init():
+            env = env_class()
+            if reward_wrapper_class is not None:
+                env = reward_wrapper_class(env)
 
-                # Create log dir
-                monitor_dir = os.path.join(monitor_folder, str(rank))
-                os.makedirs(monitor_dir, exist_ok=True)
-                env = Monitor(env, monitor_dir, allow_early_resets=allow_early_resets)
-                env.reset(seed=seed+rank)
-                return env
-            set_random_seed(seed)
-            return _init
-
-        # If not wanting vectorized envs
-        if no_vec and num_envs == 1:
-            env = _make_sb3_env(0)()
-        else:
-            # When using one environment, no need to start subprocesses
-            if num_envs == 1 or not use_subprocess:
-                env = DummyVecEnv([_make_sb3_env(i) for i in range(num_envs)])
-            else:
-                env = SubprocVecEnv([_make_sb3_env(i) for i in range(num_envs)],
-                                    start_method=start_method)
-
-        return env
-
-    elif env_type == EnvironmentType.VECTORIZED:
-        env = make_environment(env_addresses[0], num_envs)
-        if num_envs == 1:
-            env = CpuVecEnvToGymEnv(env)
             # Create log dir
-            monitor_dir = os.path.join(monitor_folder, str(0))
+            monitor_dir = os.path.join(monitor_folder, str(rank))
             os.makedirs(monitor_dir, exist_ok=True)
             env = Monitor(env, monitor_dir, allow_early_resets=allow_early_resets)
-            env.reset(seed=seed)
-            env = DummyVecEnv([lambda: env])
-        else:
-            env = CpuVecEnvToSb3VecEnv(env, monitor_folder=monitor_folder)
-            env.reset(seed=seed)
+            env.reset(seed=seed+rank)
+            return env
         set_random_seed(seed)
-        return env
+        return _init
 
-    raise ValueError(f"Invalid environment type: {env_type}")
+    # If not wanting vectorized envs
+    if no_vec and num_envs == 1:
+        env = _make_sb3_env(0)()
+    else:
+        # When using one environment, no need to start subprocesses
+        if num_envs == 1 or not use_subprocess:
+            env = DummyVecEnv([_make_sb3_env(i) for i in range(num_envs)])
+        else:
+            env = SubprocVecEnv([_make_sb3_env(i) for i in range(num_envs)],
+                                start_method=start_method)
+
+    return env
 
 # Linear scheduler for RL agent parameters
 def linear_schedule(initial_value, final_value=0.0):
@@ -222,41 +199,4 @@ class CustomMetrics(BaseCallback):
                 # Clear buffer
                 self.value_buffer[key] = []
 
-        return True
-
-class TrialEvalCallback(EvalCallback):
-    """
-    Callback used for evaluating and reporting a trial.
-    """
-
-    def __init__(
-        self,
-        eval_env: VecEnv,
-        trial: optuna.Trial,
-        n_eval_episodes: int = 5,
-        eval_freq: int = 10000,
-        deterministic: bool = True,
-    ) -> None:
-        super().__init__(
-            eval_env=eval_env,
-            n_eval_episodes=n_eval_episodes,
-            eval_freq=eval_freq,
-            deterministic=deterministic,
-            verbose=0,
-        )
-        self.trial = trial
-        self.eval_idx = 0
-        self.is_pruned = False
-
-    def _on_step(self) -> bool:
-        if self.eval_freq > 0 and self.n_calls % self.eval_freq == 0:
-            super()._on_step()
-            self.eval_idx += 1
-            # report best or report current ?
-            # report num_timesteps or elasped time ?
-            self.trial.report(self.last_mean_reward, self.eval_idx)
-            # Prune trial if need
-            if self.trial.should_prune():
-                self.is_pruned = True
-                return False
         return True
