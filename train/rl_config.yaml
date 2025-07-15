@@ -1,0 +1,70 @@
+name: PPO_1
+
+num_envs: 12
+seed: null
+
+algo: PPO
+policy: CustomPPOPolicy
+policy_kwargs:
+  features_extractor_class: CustomCombinedExtractor
+  share_features_extractor: true
+  features_extractor_kwargs:
+    layers:
+      - 64
+  actor_critic_kwargs:
+    actor_layers:
+    critic_layers:
+
+gamma: 0.998
+learning_rate:
+  - 0.00025
+  - 0.0000025
+
+# PPO specific
+clip_range:
+  - 0.15
+  - 0.025
+n_steps: 512
+n_epochs: 4
+batch_size: 1536
+
+# Advanced
+gae_lambda: 0.95
+normalize_advantage: True
+ent_coef: 0.0
+vf_coef: 0.5
+max_grad_norm: 0.5
+use_sde: False
+sde_sample_freq: -1
+target_kl: null
+
+model_checkpoint_path: null
+
+# Evaluation during training
+evaluation:
+  active: false
+  n_eval_episodes: 2
+  deterministic: true
+  frequency: 512
+  num_eval_envs: 1
+
+# Model save conditions
+model_save:
+  autosave:
+    active: true
+    frequency: 512
+  save_best_model:
+    active: false
+    frequency: 512
+    reward_to_use: "train" # "train" or "eval"
+
+# Training stop
+training_stop:
+  max_time_steps: 2048
+  reward_threshold:
+    active: false
+    value: -200
+  no_improvement_evals:
+    active: false
+    max_no_improvement_evals: 3
+    min_evals: 5
