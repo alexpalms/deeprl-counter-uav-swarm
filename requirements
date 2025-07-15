@@ -2,3 +2,4 @@ gymnasium
 matplotlib
 stable-baselines3
 pyyaml
+tensorboard

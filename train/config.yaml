@@ -1,6 +1,6 @@
 name: PPO_1
 
-num_envs: 12
+num_envs: 2
 seed: null
 
 algo: PPO
@@ -13,7 +13,9 @@ policy_kwargs:
       - 64
   actor_critic_kwargs:
     actor_layers:
+      - 64
     critic_layers:
+      - 64
 
 gamma: 0.998
 learning_rate:

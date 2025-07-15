@@ -48,6 +48,7 @@ if __name__ == "__main__":
     policy = module[train_config["policy"]]
     policy_kwargs = train_config["policy_kwargs"]
     policy_kwargs["features_extractor_class"] = module[policy_kwargs["features_extractor_class"]]
+    print("Policy kwargs:", policy_kwargs)
 
     # Generic algo settings
     gamma = train_config["gamma"]
