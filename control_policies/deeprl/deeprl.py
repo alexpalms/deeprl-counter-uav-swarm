@@ -1,10 +1,10 @@
-import heapq
-import numpy as np
-
+from stable_baselines3 import PPO
 from gymnasium import spaces
+import numpy as np
+import os
 
 class Agent:
-    def __init__(self):
+    def __init__(self, model_path="./model.zip", deterministic=True):
         self.swarm_drones_num = 50
         self.n_steps = 3
         self.effectors_num = 4
@@ -17,16 +17,13 @@ class Agent:
 
         self.action_space = spaces.MultiDiscrete([self.swarm_drones_num for _ in range(self.effectors_num)], dtype=np.int32)
 
-    def get_action(self, obs):
-        # Get the most recent distances for each drone by taking the last drones_num values
-        distance_from_sensitive_zones = obs["drones_zones_distance"][-self.swarm_drones_num:]
-        target_drones = self.k_smallest_distances(distance_from_sensitive_zones, self.effectors_num)
-        return np.array(target_drones, dtype=np.int32)
+        self.deterministic = deterministic
+        model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), model_path)
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"Cannot create agent, policy file '{model_path}' not found!")
 
-    def k_smallest_distances(self, distance_from_sensitive_zones, k):
-        heap = [(distance, i) for i, distance in enumerate(distance_from_sensitive_zones)]
-        heapq.heapify(heap)
-        smallest_indices = []
-        for _ in range(k):
-            smallest_indices.append(heapq.heappop(heap)[1])
-        return smallest_indices
+        self.agent = PPO.load(model_path, device="cpu")
+
+    def get_action(self, obs):
+        actions, _ = self.agent.predict(obs, deterministic=self.deterministic)
+        return actions
