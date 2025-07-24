@@ -1,6 +1,6 @@
 name: PPO_1
 
-num_envs: 2
+num_envs: 32
 seed: null
 
 algo: PPO
@@ -27,8 +27,8 @@ clip_range:
   - 0.15
   - 0.025
 n_steps: 512
-n_epochs: 4
-batch_size: 1536
+n_epochs: 10
+batch_size: 2048
 
 # Advanced
 gae_lambda: 0.95
@@ -54,7 +54,7 @@ evaluation:
 model_save:
   autosave:
     active: true
-    frequency: 512
+    frequency: 10000000
   save_best_model:
     active: false
     frequency: 512
@@ -62,7 +62,7 @@ model_save:
 
 # Training stop
 training_stop:
-  max_time_steps: 2048
+  max_time_steps: 200000000
   reward_threshold:
     active: false
     value: -200

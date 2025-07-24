@@ -9,10 +9,10 @@ from stable_baselines3.common.callbacks import BaseCallback, EvalCallback
 import numpy as np
 from stable_baselines3.common.results_plotter import ts2xy, load_results
 from gymnasium import Env as GymEnv
-from gymnasium import RewardWrapper
+from gymnasium import Wrapper
 
 # Make Stable Baselines3 Env function
-def make_sb3_env(env_class: GymEnv, reward_wrapper_class: RewardWrapper, num_envs: int,
+def make_sb3_env(env_class: GymEnv, wrapper_class: Wrapper, num_envs: int,
                  seed: int | None=None, allow_early_resets: bool=True, start_method: str | None=None, no_vec: bool=False,
                  use_subprocess: bool=True, monitor_folder: str="/tmp/invai/"):
     """
@@ -31,8 +31,8 @@ def make_sb3_env(env_class: GymEnv, reward_wrapper_class: RewardWrapper, num_env
     def _make_sb3_env(rank):
         def _init():
             env = env_class()
-            if reward_wrapper_class is not None:
-                env = reward_wrapper_class(env)
+            if wrapper_class is not None:
+                env = wrapper_class(env)
 
             # Create log dir
             monitor_dir = os.path.join(monitor_folder, str(rank))

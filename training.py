@@ -3,7 +3,7 @@ import re
 import yaml
 import argparse
 from environment.environment import Environment
-from modifiers.metric_damage import RewardWrapper
+from modifiers.reward_custom_normalize import CustomWrapper
 from copy import deepcopy
 from train.misc import make_sb3_env, linear_schedule, AutoSave, StartingSteps, CustomMetrics
 
@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
     os.makedirs(model_folder, exist_ok=True)
 
-    env = make_sb3_env(Environment, RewardWrapper, num_envs, seed=train_config["seed"], monitor_folder=monitor_folder)
+    env = make_sb3_env(Environment, CustomWrapper, num_envs, seed=train_config["seed"], monitor_folder=monitor_folder)
     print("Activated {} environment(s)".format(num_envs))
 
     # Policy param

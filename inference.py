@@ -1,6 +1,6 @@
 import argparse
 from environment.environment import Environment
-from modifiers.metric_damage import RewardWrapper
+from modifiers.metric_damage import CustomWrapper
 from control_policies.random import Agent as RandomAgent
 from control_policies.distance_based import Agent as ClassicAgent
 from control_policies.deeprl.deeprl import Agent as DeepRlAgent
@@ -18,7 +18,7 @@ if __name__ == "__main__":
         opt.no_render = True
 
     env = Environment(render_mode="human" if not opt.no_render else None)
-    env = RewardWrapper(env)
+    env = CustomWrapper(env)
 
     if opt.policy == "random":
         agent = RandomAgent()

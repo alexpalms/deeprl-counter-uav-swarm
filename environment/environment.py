@@ -86,7 +86,11 @@ class Environment(gym.Env):
         self.observation_space = spaces.Dict(
             {
                 "drones_zones_distance": spaces.Box(low=np.array([-1 for _ in range(self.swarm_drones_num * self.n_steps)]),
-                                                    high=np.array([1 for _ in range(self.swarm_drones_num * self.n_steps)]), dtype=np.float32)
+                                                    high=np.array([1 for _ in range(self.swarm_drones_num * self.n_steps)]), dtype=np.float32),
+                "effectors_kinematic_state": spaces.MultiBinary(len(self.effectors_list)),
+                "effectors_weapon_state": spaces.MultiDiscrete([3 for _ in range(len(self.effectors_list))]),
+                "drones_state": spaces.MultiDiscrete([3 for _ in range(self.swarm_drones_num)]),
+                "drones_explosive_power": spaces.MultiDiscrete([3 for _ in range(self.swarm_drones_num)]),
             }
         )
 
@@ -248,7 +252,13 @@ class Environment(gym.Env):
         pass
 
     def _get_observation(self):
-        return {"drones_zones_distance": np.concatenate(self.stacked_obs, axis=0)}
+        return {
+            "drones_zones_distance": np.concatenate(self.stacked_obs, axis=0),
+            "effectors_kinematic_state": np.array([effector.kinematic_state.value for effector in self.effectors_list]),
+            "effectors_weapon_state": np.array([effector.weapon_state.value for effector in self.effectors_list]),
+            "drones_state": np.array([drone.state.value for drone in self.swarm_drones_list]),
+            "drones_explosive_power": np.array([drone.explosive.value for drone in self.swarm_drones_list]),
+        }
 
     def _get_reward(self):
         reward = 0

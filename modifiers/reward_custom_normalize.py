@@ -1,6 +1,6 @@
 import gymnasium as gym
 
-class RewardWrapper(gym.Wrapper):
+class CustomWrapper(gym.Wrapper):
     """
     A gym wrapper that normalizes rewards by dividing them by a scaling factor.
     """
