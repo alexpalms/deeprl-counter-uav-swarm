@@ -10,6 +10,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--policy', type=str, default="deeprl", help='Type of control policy')
     parser.add_argument('--n_episodes', type=int, default=1, help='How many episodes to run')
+    parser.add_argument('--seed', type=int, default=42, help='Seed')
     parser.add_argument('--no_render', action='store_true', help='Disable rendering')
     opt = parser.parse_args()
     print(opt)
@@ -30,7 +31,7 @@ if __name__ == "__main__":
         raise Exception(f"Unrecognized policy type: {opt.policy}")
 
     print("==========================")
-    obs, info = env.reset()
+    obs, info = env.reset(seed=opt.seed)
     env.render()
     cumulative_reward = [0.0]
     episode_counter = 0

@@ -129,7 +129,7 @@ def calculate_drones_zones_distance(tick, swarm_drones_list, sensitive_zones, ma
         for sensitive_zone in sensitive_zones:
             distance = np.linalg.norm(sensitive_zone.location.coords - drone.detections[idx].position.coords)
             weighted_distance += distance / (sensitive_zone.value * sensitive_zone.radius)
-            weighted_distance /= (drone.detections[idx].explosive.value + 1)
+        weighted_distance /= (drone.detections[idx].explosive.value + 1)
         weighted_distance += drone.state.value * 1000
         drones_zones_distance.append((min(weighted_distance, max_distance_weighted) / (max_distance_weighted * 0.5)) - 1)
 
