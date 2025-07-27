@@ -119,6 +119,18 @@ def control_effectors(effectors_list, swarm_drones_list, tick, actions):
         i_step = min(tick, len(swarm_drones_list[action].trajectory)-1)
         effectors_list[idx].assign_target(swarm_drones_list[action].detections[i_step].position)
 
+def calculate_drones_coordinates(tick, swarm_drones_list, max_distance_weighted):
+    # Compute the minimum index value once
+    min_index = [min(tick, len(drone.trajectory)-1) for drone in swarm_drones_list]
+
+    drones_coordinates = []
+    for drone, idx in zip(swarm_drones_list, min_index):
+        coords = drone.detections[idx].position.coords / max_distance_weighted
+        drones_coordinates.extend(coords.tolist())  # Flatten into one list
+
+    # Convert to float32 numpy array
+    return np.array(drones_coordinates, dtype=np.float32)
+
 def calculate_drones_zones_distance(tick, swarm_drones_list, sensitive_zones, max_distance_weighted):
     # Compute the minimum index value once
     min_index = [min(tick, len(drone.trajectory)-1) for drone in swarm_drones_list]

@@ -2,11 +2,11 @@ import numpy as np
 import gymnasium as gym
 from gymnasium import spaces
 from collections import deque
-import time
 
 from environment.base_classes import BoundingBox, Vector3D, ExplosiveType, ChassisType, EffectorWeaponState, DroneState
 from environment.supporting_classes import SensitiveZone, Drone, Effector, Detection, ScenarioRenderer
-from environment.utils import calculate_drones_zones_distance, control_effectors, drone_effector_aiming_distance_calculation, calculate_neutralization_probability, swarm_generate_drone_trajectory
+from environment.utils import calculate_drones_zones_distance, control_effectors, drone_effector_aiming_distance_calculation, \
+                              calculate_neutralization_probability, swarm_generate_drone_trajectory, calculate_drones_coordinates
 
 class Environment(gym.Env):
     def __init__(self, render_mode="rgb_array"):
@@ -80,13 +80,18 @@ class Environment(gym.Env):
             self.max_distance_weighted += max_distance / (sensitive_zone.value * sensitive_zone.radius)
 
         self.n_steps = 3
-        self.stacked_obs = deque(maxlen=self.n_steps)
+        self.stacked_obs = {
+            "drones_zones_distance": deque(maxlen=self.n_steps),
+            "drones_coordinates": deque(maxlen=self.n_steps),
+        }
 
         # Observations are dictionaries
         self.observation_space = spaces.Dict(
             {
                 "drones_zones_distance": spaces.Box(low=np.array([-1 for _ in range(self.swarm_drones_num * self.n_steps)]),
                                                     high=np.array([1 for _ in range(self.swarm_drones_num * self.n_steps)]), dtype=np.float32),
+                "drones_coordinates": spaces.Box(low=np.array([-1 for _ in range(self.swarm_drones_num * 3 * self.n_steps)]),
+                                                 high=np.array([1 for _ in range(self.swarm_drones_num * 3 * self.n_steps)]), dtype=np.float32),
                 "effectors_kinematic_state": spaces.MultiBinary(len(self.effectors_list)),
                 "effectors_weapon_state": spaces.MultiDiscrete([3 for _ in range(len(self.effectors_list))]),
                 "drones_state": spaces.MultiDiscrete([3 for _ in range(self.swarm_drones_num)]),
@@ -197,8 +202,10 @@ class Environment(gym.Env):
             ]
             drone.detections = detections
 
-        self.stacked_obs.clear()
-        self.stacked_obs.extend([calculate_drones_zones_distance(self.tick, self.swarm_drones_list, self.sensitive_zones, self.max_distance_weighted)] * self.n_steps)
+        self.stacked_obs["drones_zones_distance"].clear()
+        self.stacked_obs["drones_coordinates"].clear()
+        self.stacked_obs["drones_zones_distance"].extend([calculate_drones_zones_distance(self.tick, self.swarm_drones_list, self.sensitive_zones, self.max_distance_weighted)] * self.n_steps)
+        self.stacked_obs["drones_coordinates"].extend([calculate_drones_coordinates(self.tick, self.swarm_drones_list, 100.0)] * self.n_steps)
 
         if self.render_mode == "human":
             trajectories = []
@@ -235,7 +242,8 @@ class Environment(gym.Env):
         # Time tick
         self.tick += 1
 
-        self.stacked_obs.append(calculate_drones_zones_distance(self.tick, self.swarm_drones_list, self.sensitive_zones, self.max_distance_weighted))
+        self.stacked_obs["drones_zones_distance"].append(calculate_drones_zones_distance(self.tick, self.swarm_drones_list, self.sensitive_zones, self.max_distance_weighted))
+        self.stacked_obs["drones_coordinates"].append(calculate_drones_coordinates(self.tick, self.swarm_drones_list, 100.0))
 
         return self._get_observation(), self._get_reward(), self._get_episode_termination(), self._get_episode_abortion(), self._get_info()
 
@@ -253,7 +261,8 @@ class Environment(gym.Env):
 
     def _get_observation(self):
         return {
-            "drones_zones_distance": np.concatenate(self.stacked_obs, axis=0),
+            "drones_zones_distance": np.concatenate(self.stacked_obs["drones_zones_distance"], axis=0),
+            "drones_coordinates": np.concatenate(self.stacked_obs["drones_coordinates"], axis=0),
             "effectors_kinematic_state": np.array([effector.kinematic_state.value for effector in self.effectors_list]),
             "effectors_weapon_state": np.array([effector.weapon_state.value for effector in self.effectors_list]),
             "drones_state": np.array([drone.state.value for drone in self.swarm_drones_list]),
