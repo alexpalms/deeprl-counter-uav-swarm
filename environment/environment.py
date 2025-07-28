@@ -109,6 +109,14 @@ class Environment(gym.Env):
                                             plot_trajectories=False, plot_detections=False, grid=False,
                                             render_mode=render_mode)
 
+    def action_masks(self):
+        mask = [True for _ in range(self.effectors_num * self.swarm_drones_num)]
+        for idx, drone in enumerate(self.swarm_drones_list):
+            if drone.state.value != DroneState.ACTIVE.value:
+                for effector_idx in range(self.effectors_num):
+                    mask[effector_idx * self.swarm_drones_num + idx] = False
+        return mask
+
     def reset(self, seed=None, options=None):
         # We need the following line to seed self.np_random
         super(type(self), self).reset(seed=seed)

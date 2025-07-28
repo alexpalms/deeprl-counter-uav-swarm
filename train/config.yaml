@@ -1,10 +1,12 @@
-name: PPO_1
+name: PPO_3
 
 num_envs: 32
 seed: null
 
-algo: PPO
-policy: CustomPPOPolicy
+#algo: PPO
+algo: MaskablePPO
+#policy: CustomPPOPolicy
+policy: CustomMaskablePPOPolicy
 policy_kwargs:
   features_extractor_class: CustomCombinedExtractor
   share_features_extractor: true

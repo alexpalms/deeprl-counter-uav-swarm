@@ -6,36 +6,28 @@ from control_policies.distance_based import Agent as ClassicAgent
 from control_policies.deeprl.deeprl import Agent as DeepRlAgent
 import statistics
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--policy', type=str, default="deeprl", help='Type of control policy')
-    parser.add_argument('--n_episodes', type=int, default=1, help='How many episodes to run')
-    parser.add_argument('--seed', type=int, default=42, help='Seed')
-    parser.add_argument('--no_render', action='store_true', help='Disable rendering')
-    opt = parser.parse_args()
-    print(opt)
+def main(n_episodes, seed, policy, no_render=True):
+    if n_episodes > 1:
+        no_render = True
 
-    if opt.n_episodes > 1:
-        opt.no_render = True
-
-    env = Environment(render_mode="human" if not opt.no_render else None)
+    env = Environment(render_mode="human" if not no_render else None)
     env = CustomWrapper(env)
 
-    if opt.policy == "random":
+    if policy == "random":
         agent = RandomAgent()
-    elif opt.policy == "deeprl":
+    elif policy == "deeprl":
         agent = DeepRlAgent()
-    elif opt.policy == "classic":
+    elif policy == "classic":
         agent = ClassicAgent()
     else:
-        raise Exception(f"Unrecognized policy type: {opt.policy}")
+        raise Exception(f"Unrecognized policy type: {policy}")
 
     print("==========================")
-    obs, info = env.reset(seed=opt.seed)
+    obs, info = env.reset(seed=seed)
     env.render()
     cumulative_reward = [0.0]
     episode_counter = 0
-    while episode_counter < opt.n_episodes:
+    while episode_counter < n_episodes:
         env.render()
         action = agent.get_action(obs)
         obs, reward, terminated, truncated, info = env.step(action)
@@ -50,6 +42,20 @@ if __name__ == "__main__":
 
     env.close()
 
-    if opt.n_episodes > 1:
+    if n_episodes > 1:
         print("==========================")
         print(f"Cumulative reward [%Damage]: AVG = {round(statistics.mean(cumulative_reward[:-1]), 2)}, STD = {round(statistics.stdev(cumulative_reward[:-1]), 2)}")
+
+    return cumulative_reward[:-1]  # Exclude the last zero entry
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--policy', type=str, default="deeprl", help='Type of control policy')
+    parser.add_argument('--n_episodes', type=int, default=1, help='How many episodes to run')
+    parser.add_argument('--seed', type=int, default=42, help='Seed')
+    parser.add_argument('--no_render', action='store_true', help='Disable rendering')
+    opt = parser.parse_args()
+    print(opt)
+
+    main(opt.n_episodes, opt.seed, opt.no_render, opt.policy)

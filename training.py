@@ -7,10 +7,11 @@ from modifiers.reward_custom_normalize import CustomWrapper
 from copy import deepcopy
 from train.misc import make_sb3_env, linear_schedule, AutoSave, StartingSteps, CustomMetrics
 
-from train.custom_ppo_policy import CustomPPOPolicy
+from train.custom_ppo_policy import CustomPPOPolicy, CustomMaskablePPOPolicy
 from train.custom_extractors import CustomFlatExtractor, CustomCombinedExtractor
 
 from stable_baselines3 import PPO
+from sb3_contrib import MaskablePPO
 from stable_baselines3.common.callbacks import EvalCallback, StopTrainingOnRewardThreshold, StopTrainingOnNoModelImprovement
 
 
@@ -55,7 +56,7 @@ if __name__ == "__main__":
     model_checkpoint_path = train_config["model_checkpoint_path"]
     learning_rate = linear_schedule(train_config["learning_rate"][0], train_config["learning_rate"][1])
 
-    if train_config["algo"] == "PPO":
+    if train_config["algo"] == "PPO" or train_config["algo"] == "MaskablePPO":
         clip_range = linear_schedule(train_config["clip_range"][0], train_config["clip_range"][1])
         clip_range_vf = clip_range
         n_epochs = train_config["n_epochs"]
@@ -79,16 +80,14 @@ if __name__ == "__main__":
     callbacks = [CustomMetrics()]
 
     if model_checkpoint_path is None:
-        if train_config["algo"] == "PPO":
-            agent = PPO(policy, env, verbose=1,
-                        gamma=gamma, batch_size=batch_size,
-                        n_epochs=n_epochs, n_steps=n_steps,
-                        learning_rate=learning_rate, clip_range=clip_range,
-                        clip_range_vf=clip_range_vf, policy_kwargs=policy_kwargs,
-                        gae_lambda=gae_lambda, normalize_advantage=normalize_advantage,
-                        ent_coef=ent_coef, vf_coef=vf_coef, max_grad_norm=max_grad_norm,
-                        use_sde=use_sde, sde_sample_freq=sde_sample_freq, target_kl=target_kl,
-                        tensorboard_log=tensor_board_folder, device="cpu")
+        agent = module[train_config["algo"]](policy, env, verbose=1,
+                                             gamma=gamma, batch_size=batch_size,
+                                             n_epochs=n_epochs, n_steps=n_steps,
+                                             learning_rate=learning_rate, clip_range=clip_range,
+                                             clip_range_vf=clip_range_vf, policy_kwargs=policy_kwargs,
+                                             gae_lambda=gae_lambda, normalize_advantage=normalize_advantage,
+                                             ent_coef=ent_coef, vf_coef=vf_coef, max_grad_norm=max_grad_norm,
+                                             target_kl=target_kl, tensorboard_log=tensor_board_folder, device="cpu")
     else:
         # Load the trained agent
         # Use regex to find the number after the latest underscore
@@ -97,14 +96,12 @@ if __name__ == "__main__":
             raise Exception(f"{model_checkpoint_path} should contain a number at the end of the filename indicating the number of training steps.")
         starting_steps = int(match.group(1))  # Convert the found number to an integer
 
-        if train_config["algo"] == "PPO":
-            agent = PPO.load(model_checkpoint_path, env=env,
-                             batch_size=batch_size, n_epochs=n_epochs, n_steps=n_steps, gamma=gamma,
-                             learning_rate=learning_rate, clip_range=clip_range, clip_range_vf=clip_range_vf,
-                             gae_lambda=gae_lambda, normalize_advantage=normalize_advantage, ent_coef=ent_coef,
-                             vf_coef=vf_coef, max_grad_norm=max_grad_norm, use_sde=use_sde,
-                             sde_sample_freq=sde_sample_freq, target_kl=target_kl,
-                             tensorboard_log=tensor_board_folder, device="cpu")
+        agent = module[train_config["algo"]].load(model_checkpoint_path, env=env,
+                                                    batch_size=batch_size, n_epochs=n_epochs, n_steps=n_steps, gamma=gamma,
+                                                    learning_rate=learning_rate, clip_range=clip_range, clip_range_vf=clip_range_vf,
+                                                    gae_lambda=gae_lambda, normalize_advantage=normalize_advantage, ent_coef=ent_coef,
+                                                    vf_coef=vf_coef, max_grad_norm=max_grad_norm, target_kl=target_kl,
+                                                    tensorboard_log=tensor_board_folder, device="cpu")
         reset_num_timesteps = False
         callbacks.append(StartingSteps(starting_steps=starting_steps))
 
@@ -152,8 +149,7 @@ if __name__ == "__main__":
     if evaluation_config["active"]:
         # Separate evaluation env
         num_eval_envs = evaluation_config["num_eval_envs"]
-        assert num_eval_envs == 1 or env_type == EnvironmentType.STANDARD, "Evaluation must be done on a single environment for vectorized environments (custom monitor wrapper not supported yet)"
-        eval_env = make_sb3_env(env_addresses[-num_eval_envs:], num_eval_envs, env_type, spaces_modifiers_config_file_path, reward_modifiers_config_file_path, monitor_folder=monitor_folder_eval, seed=train_config["seed"])
+        eval_env = make_sb3_env(Environment, CustomWrapper, num_eval_envs, seed=train_config["seed"], monitor_folder=monitor_folder)
 
         eval_callback = EvalCallback(
             eval_env,
