@@ -46,11 +46,11 @@ pip install -r requirements
 
 <table>
   <tr>
-    <td width="50%"><a href="https://youtu.be/GooNFDk42Nw"><img src="https://img.youtube.com/vi/GooNFDk42Nw/0.jpg" alt="Demo Video" width="100%"/></a></td>
+    <td width="50%"><a href="https://youtu.be/GooNFDk42Nw" target="_blank"><img src="https://img.youtube.com/vi/GooNFDk42Nw/0.jpg" alt="Demo Video" width="100%"/></a></td>
     <td width="50%"><img src="./results/img/damage_distributions.svg" alt="Damage Comparison" width="100%"/></td>
   </tr>
   <tr>
-    <td align="center">Demo Video</td>
+    <td align="center"><a href="https://youtu.be/GooNFDk42Nw" target="_blank">Demo Video</a></td>
     <td align="center">Damage Comparison</td>
   </tr>
 </table>
