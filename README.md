@@ -14,9 +14,17 @@ pip install -r requirements
 ```
 
 # Simulator
-![Alt text](./results/img/simulator.png)
 
-![Alt text](./results/img/neutralization_probability_plot.png)
+<table>
+  <tr>
+    <td width="50%"><img src="./results/img/simulator.png" alt="Simulator" width="100%"/></td>
+    <td width="50%"><img src="./results/img/neutralization_probability_plot.png" alt="Neutralization Probability" width="100%"/></td>
+  </tr>
+  <tr>
+    <td align="center">Scenario Simulator In Execution</td>
+    <td align="center">Drone Neutralization Probability Plot</td>
+  </tr>
+</table>
 
 # Training
 
@@ -32,9 +40,13 @@ pip install -r requirements
 
 *Table: Evaluation Results. 100 Episodes × 5 Seeds*
 
-[![Demo Video](https://img.youtube.com/vi/GooNFDk42Nw/0.jpg)](https://youtu.be/GooNFDk42Nw)
 
-![Alt text](./results/img/damage_distributions.svg)
+
+
+
+| [![Demo Video](https://img.youtube.com/vi/GooNFDk42Nw/0.jpg)](https://youtu.be/GooNFDk42Nw) | ![Alt text](./results/img/damage_distributions.svg) |
+|:---------------------------------------------------:|:-------------------------------------------------:|
+| Demo Video                                | Damage Comparison                                |
 
 | ![Alt text](./results/img/tracking_performance.svg) | ![Alt text](./results/img/weapon_utilization.svg) |
 |:---------------------------------------------------:|:-------------------------------------------------:|
