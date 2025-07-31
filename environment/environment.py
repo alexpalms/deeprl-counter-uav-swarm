@@ -2,6 +2,7 @@ import numpy as np
 import gymnasium as gym
 from gymnasium import spaces
 from collections import deque
+import math
 
 from environment.base_classes import BoundingBox, Vector3D, ExplosiveType, ChassisType, EffectorWeaponState, DroneState
 from environment.supporting_classes import SensitiveZone, Drone, Effector, Detection, ScenarioRenderer
@@ -92,6 +93,8 @@ class Environment(gym.Env):
                                                     high=np.array([1 for _ in range(self.swarm_drones_num * self.n_steps)]), dtype=np.float32),
                 "drones_coordinates": spaces.Box(low=np.array([-1 for _ in range(self.swarm_drones_num * 3 * self.n_steps)]),
                                                  high=np.array([1 for _ in range(self.swarm_drones_num * 3 * self.n_steps)]), dtype=np.float32),
+                "effectors_azel": spaces.Box(low=np.array([-1 for _ in range(self.effectors_num * 2)]),
+                                             high=np.array([1 for _ in range(self.effectors_num * 2)]), dtype=np.float32),
                 "effectors_kinematic_state": spaces.MultiBinary(len(self.effectors_list)),
                 "effectors_weapon_state": spaces.MultiDiscrete([3 for _ in range(len(self.effectors_list))]),
                 "drones_state": spaces.MultiDiscrete([3 for _ in range(self.swarm_drones_num)]),
@@ -271,6 +274,7 @@ class Environment(gym.Env):
         return {
             "drones_zones_distance": np.concatenate(self.stacked_obs["drones_zones_distance"], axis=0),
             "drones_coordinates": np.concatenate(self.stacked_obs["drones_coordinates"], axis=0),
+            "effectors_azel": (np.array([effector.aiming for effector in self.effectors_list]) / math.pi).flatten(),
             "effectors_kinematic_state": np.array([effector.kinematic_state.value for effector in self.effectors_list]),
             "effectors_weapon_state": np.array([effector.weapon_state.value for effector in self.effectors_list]),
             "drones_state": np.array([drone.state.value for drone in self.swarm_drones_list]),

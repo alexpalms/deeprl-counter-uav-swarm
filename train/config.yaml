@@ -1,4 +1,4 @@
-name: PPO_3
+name: MaskedPPO
 
 num_envs: 32
 seed: null
@@ -64,7 +64,7 @@ model_save:
 
 # Training stop
 training_stop:
-  max_time_steps: 200000000
+  max_time_steps: 80000000
   reward_threshold:
     active: false
     value: -200

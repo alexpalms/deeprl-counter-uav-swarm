@@ -16,7 +16,7 @@ def main(n_episodes, seed, policy, no_render=True):
     if policy == "random":
         agent = RandomAgent()
     elif policy == "deeprl":
-        agent = DeepRlAgent()
+        agent = DeepRlAgent(env)
     elif policy == "classic":
         agent = ClassicAgent()
     else:
@@ -58,4 +58,4 @@ if __name__ == "__main__":
     opt = parser.parse_args()
     print(opt)
 
-    main(opt.n_episodes, opt.seed, opt.no_render, opt.policy)
+    main(opt.n_episodes, opt.seed, opt.policy, opt.no_render)
