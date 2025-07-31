@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 from scipy.stats import norm
 import matplotlib.colors as mcolors
 
-def bucket_and_plot(list1, list2, list3):
-    grouped_lists = [list1, list2, list3]
+def bucket_and_plot(values, features):
+    grouped_lists = [v for v in values.values()]
     group_names = ["DeepRL", "Classic", "Random"]
     base_colors = ['#cf3030', '#aaaaaa', '#30a0cf']  # Red, Gray, Blue-ish
 
@@ -23,8 +23,8 @@ def bucket_and_plot(list1, list2, list3):
     fig.patch.set_facecolor('#121212')
 
     font_size = 14
-    ax.set_title("Comparison of Damage Distributions", color='white', fontsize=font_size + 2)
-    ax.set_xlabel("Damage [%]", color='white', fontsize=font_size)
+    ax.set_title(features["title"], color='white', fontsize=font_size + 2)
+    ax.set_xlabel(features["xlabel"], color='white', fontsize=font_size)
     ax.set_ylabel("Frequency []", color='white', fontsize=font_size)
     ax.grid(True, linestyle='--', alpha=0.3)
     ax.tick_params(colors='white', labelsize=font_size)
@@ -61,20 +61,20 @@ def bucket_and_plot(list1, list2, list3):
 
     ax.legend(handles=legend_handles, fontsize=font_size - 2)
     plt.tight_layout()
-    plt.savefig("damage_distributions.svg", format='svg', dpi=300, bbox_inches='tight')
+    plt.savefig(features["image"]+".svg", format='svg', dpi=300, bbox_inches='tight')
     plt.show()
 
-
 def main(n_episodes, seeds):
-    cumulative_rewards = {
-        "deeprl": [],
-        "classic": [],
-        "random": []
-    }
+    cumulative_rewards_group = { "deeprl": [], "classic": [], "random": [] }
+    effectors_tracking_group = { "deeprl": [], "classic": [], "random": [] }
+    effectors_weapon_utilization_group = { "deeprl": [], "classic": [], "random": [] }
     for policy in ["deeprl", "classic", "random"]:
         print(f"Running inference for policy: {policy}")
         for seed in seeds:
-            cumulative_rewards[policy].extend(inference_main(n_episodes, seed, policy))
+            cumulative_rewards, effectors_tracking_states, effectors_weapon_utilization = inference_main(n_episodes, seed, policy)
+            cumulative_rewards_group[policy].extend(cumulative_rewards)
+            effectors_tracking_group[policy].extend(effectors_tracking_states)
+            effectors_weapon_utilization_group[policy].extend(effectors_weapon_utilization)
 
     #cumulative_rewards = {
     #    "deeprl": [10 * np.random.randn(n_episodes) + 100 for _ in seeds],  # Simulated data
@@ -82,7 +82,14 @@ def main(n_episodes, seeds):
     #    "random": [10 * np.random.randn(n_episodes) + 50 for _ in seeds]  # Simulated data
     #}
 
-    bucket_and_plot(cumulative_rewards["deeprl"], cumulative_rewards["classic"], cumulative_rewards["random"])
+    features = [
+        {"title": "Comparison of Damage Distributions", "xlabel": "Cumulative Damage [%]", "image": "damage_distributions"},
+        {"title": "Comparison of Effectors Kinematic Performance", "xlabel": "In-Tracking Time [%]", "image": "tracking_performance"},
+        {"title": "Comparison of Effectors Weapon Utilization", "xlabel": "Weapon Utilization [%]", "image": "weapon_utilization"},
+    ]
+    bucket_and_plot(cumulative_rewards_group, features[0])
+    bucket_and_plot(effectors_tracking_group, features[1])
+    bucket_and_plot(effectors_weapon_utilization_group, features[2])
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
