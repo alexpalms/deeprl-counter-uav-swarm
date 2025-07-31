@@ -27,8 +27,14 @@ pip install -r requirements
 </table>
 
 # Training
-
-![Alt text](./results/img/training_progression.svg)
+<table>
+  <tr>
+    <td width="50%"><img src="./results/img/training_progression.svg" alt="Training Curves" width="100%"/></td>
+  </tr>
+  <tr>
+    <td align="center">Training Curves</td>
+  </tr>
+</table>
 
 # Evaluation and Results
 
