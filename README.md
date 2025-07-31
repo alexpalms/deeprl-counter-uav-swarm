@@ -1,9 +1,7 @@
 
-<table>
-  <tr>
-    <td align="center" width="100%"><img src="./results/img/final_state.png" alt="Training Curves" width="75%"/></td>
-  </tr>
-</table>
+<p align="center">
+    <img src="./results/img/final_state.png" alt="Training Curves" width="75%"/>
+</p>
 
 <p align="center">
 <a href="https://arxiv.org/abs/2210.10595"><img src="https://img.shields.io/badge/paper-arXiv:2210.10595-B31B1B?logo=arxiv" alt="Paper"/></a>
