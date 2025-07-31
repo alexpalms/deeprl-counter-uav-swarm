@@ -1,83 +1,88 @@
+from inference import main as inference_main
+import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import norm
-from inference import main as inference_main
-import argparse
+import matplotlib.colors as mcolors
 
-def bucket_and_plot(list1, list2):
-    # Convert to numpy arrays
-    arr1 = np.array(list1)
-    arr2 = np.array(list2)
+def bucket_and_plot(list1, list2, list3):
+    grouped_lists = [list1, list2, list3]
+    group_names = ["DeepRL", "Classic", "Random"]
+    base_colors = ['#cf3030', '#aaaaaa', '#30a0cf']  # Red, Gray, Blue-ish
 
-    # Compute overall min and max for shared binning
-    overall_min = min(arr1.min(), arr2.min())
-    overall_max = max(arr1.max(), arr2.max())
+    # Flatten all data to get global binning range
+    all_values = np.concatenate(grouped_lists)
+    overall_min, overall_max = np.min(all_values), np.max(all_values)
     bins = np.linspace(overall_min, overall_max, 21)
     centers = (bins[:-1] + bins[1:]) / 2
-    width = (bins[1] - bins[0]) * 0.4
-
-    # Histogram data
-    hist1, _ = np.histogram(arr1, bins=bins)
-    hist2, _ = np.histogram(arr2, bins=bins)
-
-    # Fit Gaussian distributions
-    mu1, std1 = arr1.mean(), arr1.std()
-    mu2, std2 = arr2.mean(), arr2.std()
-
-    x = np.linspace(overall_min, overall_max, 1000)
-    pdf1 = norm.pdf(x, mu1, std1) * len(arr1) * (bins[1] - bins[0])
-    pdf2 = norm.pdf(x, mu2, std2) * len(arr2) * (bins[1] - bins[0])
+    width = (bins[1] - bins[0]) * 0.9 / 3  # Divide by number of groups to avoid overlap
 
     # Set dark theme
     plt.style.use('dark_background')
-    fig, ax = plt.subplots(figsize=(10, 5))
+    fig, ax = plt.subplots(figsize=(12, 6))
     fig.patch.set_facecolor('#121212')
 
-    # Colors
-    red_desat = '#cf3030'
-    gray_neutral = '#aaaaaa'
-
-    # Plot histograms
-    ax.bar(centers - width/2, hist1, width=width, label="DeepRL", alpha=0.7,
-           color=red_desat, linewidth=1.5, edgecolor=red_desat)
-    ax.bar(centers + width/2, hist2, width=width, label="Classic", alpha=0.7,
-           color=gray_neutral, linewidth=1.5, edgecolor=gray_neutral)
-
-    # Plot Gaussian fits with μ and σ in legend
-    label1 = f"DeepRL Gaussian (μ={mu1:.2f}, σ={std1:.2f})"
-    label2 = f"Classic Gaussian (μ={mu2:.2f}, σ={std2:.2f})"
-    ax.plot(x, pdf1, color=red_desat, linestyle="--", label=label1, linewidth=2.5)
-    ax.plot(x, pdf2, color=gray_neutral, linestyle="--", label=label2, linewidth=2.5)
-
-    # Vertical mean lines
-    ax.axvline(mu1, color=red_desat, linestyle=":", linewidth=2.5)
-    ax.axvline(mu2, color=gray_neutral, linestyle=":", linewidth=2.5)
-
-    # Font size adjustments
-    font_size = 22
-    ax.set_title("Comparison of DeepRL vs Classic Control Damage Distribution", color='white', fontsize=font_size + 2)
-    ax.set_xlabel("Value", color='white', fontsize=font_size)
-    ax.set_ylabel("Count", color='white', fontsize=font_size)
-    ax.legend(fontsize=font_size)
+    font_size = 14
+    ax.set_title("Comparison of Damage Distributions", color='white', fontsize=font_size + 2)
+    ax.set_xlabel("Damage [%]", color='white', fontsize=font_size)
+    ax.set_ylabel("Frequency []", color='white', fontsize=font_size)
     ax.grid(True, linestyle='--', alpha=0.3)
     ax.tick_params(colors='white', labelsize=font_size)
 
+    legend_handles = []
+    for group_idx, (arr, base_color, group_name) in enumerate(zip(grouped_lists, base_colors, group_names)):
+        arr = np.array(arr)
+        hist, _ = np.histogram(arr, bins=bins)
+        offset = (group_idx - 1) * width  # -1, 0, 1 for left, center, right
+
+        # Plot histogram
+        bar = ax.bar(centers + offset, hist, width=width,
+                     alpha=0.6, label=f"{group_name}", color=base_color,
+                     edgecolor=base_color, linewidth=1.2)
+
+        # Gaussian fit
+        mu, std = arr.mean(), arr.std()
+        x = np.linspace(overall_min, overall_max, 1000)
+        pdf = norm.pdf(x, mu, std) * len(arr) * (bins[1] - bins[0])
+        curve, = ax.plot(x, pdf, linestyle='--', linewidth=2.0, color=base_color)
+
+        # Vertical line for the mean
+        ax.axvline(mu, color=base_color, linestyle=":", linewidth=2.0)
+
+        # Add legend entry for Gaussian curve with mean and std
+        legend_handles.append(
+            plt.Line2D([0], [0], color=base_color, linestyle='--', linewidth=2.0,
+                       label=f"{group_name} Gaussian (μ={mu:.1f}, σ={std:.1f})")
+        )
+
+    # Add histogram handles to legend in reversed order
+    for bar, group_name in reversed(list(zip(ax.containers, group_names))):
+        legend_handles.insert(0, plt.Rectangle((0,0),1,1, color=bar.patches[0].get_facecolor(), alpha=0.6, label=group_name + " Histogram"))
+
+    ax.legend(handles=legend_handles, fontsize=font_size - 2)
     plt.tight_layout()
+    plt.savefig("damage_distributions.svg", format='svg', dpi=300, bbox_inches='tight')
     plt.show()
 
-def main(n_episodes, n_seeds):
+
+def main(n_episodes, seeds):
     cumulative_rewards = {
-        "deep_rl": [],
+        "deeprl": [],
         "classic": [],
         "random": []
     }
     for policy in ["deeprl", "classic", "random"]:
         print(f"Running inference for policy: {policy}")
+        for seed in seeds:
+            cumulative_rewards[policy].extend(inference_main(n_episodes, seed, policy))
 
-        for seed in range(n_seeds):
-            cumulative_rewards[policy].append(inference_main(n_episodes, seed, policy))
+    #cumulative_rewards = {
+    #    "deeprl": [10 * np.random.randn(n_episodes) + 100 for _ in seeds],  # Simulated data
+    #    "classic": [10 * np.random.randn(n_episodes) + 80 for _ in seeds],  # Simulated data
+    #    "random": [10 * np.random.randn(n_episodes) + 50 for _ in seeds]  # Simulated data
+    #}
 
-    bucket_and_plot(cumulative_rewards["deep_rl"], cumulative_rewards["classic"], cumulative_rewards["random"])
+    bucket_and_plot(cumulative_rewards["deeprl"], cumulative_rewards["classic"], cumulative_rewards["random"])
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
