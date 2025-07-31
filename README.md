@@ -1,4 +1,10 @@
 
+<table>
+  <tr>
+    <td align="center" width="100%"><img src="./results/img/final_state.png" alt="Training Curves" width="75%"/></td>
+  </tr>
+</table>
+
 <p align="center">
 <a href="https://arxiv.org/abs/2210.10595"><img src="https://img.shields.io/badge/paper-arXiv:2210.10595-B31B1B?logo=arxiv" alt="Paper"/></a>
 </p>
@@ -61,7 +67,7 @@ The following image shows a comparison of training curves between PPO and Maskab
 
 <table>
   <tr>
-    <td width="50%"><img src="./results/img/training_progression.svg" alt="Training Curves" width="100%"/></td>
+    <td align="center" width="100%"><img src="./results/img/training_progression.svg" alt="Training Curves" width="70%"/></td>
   </tr>
   <tr>
     <td align="center">Training Curves</td>
