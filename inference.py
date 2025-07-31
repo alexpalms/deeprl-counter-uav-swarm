@@ -37,8 +37,8 @@ def main(n_episodes, seed, policy, no_render=True):
         cumulative_reward[episode_counter] += reward
         if done:
             print(f"Ep. # {episode_counter+1} - Cumulative reward [%Damage]: {round(cumulative_reward[episode_counter], 2)}")
-            print(f"                          - Effectors kinematic states: ", info["custom_eval_metrics/effectors_kinematic_states"])
-            print(f"                          - Effectors weapon states: ", info["custom_eval_metrics/effectors_weapon_states"])
+            print(f"        - Effectors kinematic states: ", info["custom_eval_metrics/effectors_kinematic_states"])
+            print(f"        - Effectors weapon states: ", info["custom_eval_metrics/effectors_weapon_states"])
             effectors_tracking.append(info["custom_eval_metrics/effectors_kinematic_states"]["TRACKING"])
             effectors_weapon_utilization.append(info["custom_eval_metrics/effectors_weapon_states"]["UTILIZATION"])
             env.render()
