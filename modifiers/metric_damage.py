@@ -29,11 +29,9 @@ class CustomWrapper(gym.Wrapper):
         self.cumulative_damage += normalized_reward
         if terminated or truncated:
             info["custom_eval_metrics/damage"] = self.cumulative_damage
-            info["custom_eval_metrics/effectors_kinematic_states"] = {k.name: round(v/(self.num_effectors * self.env.tick), 2)for k, v in self.effectors_kinematic_states_counters.items()}
-            info["custom_eval_metrics/effectors_weapon_states"] = {k.name: round(v/(self.num_effectors * self.env.tick), 2) for k, v in self.effectors_weapon_states_counters.items()}
-            info["custom_eval_metrics/effectors_weapon_states"]["UTILIZATION"] = round(
-                (self.effectors_weapon_states_counters[EffectorWeaponState.SHOOTING]  + self.effectors_weapon_states_counters[EffectorWeaponState.RECHARGING])/(self.num_effectors * self.env.tick), 2
-            )
+            info["custom_eval_metrics/effectors_kinematic_states"] = {k.name: v/(self.num_effectors * self.env.tick) * 100 for k, v in self.effectors_kinematic_states_counters.items()}
+            info["custom_eval_metrics/effectors_weapon_states"] = {k.name: v/(self.num_effectors * self.env.tick) * 100 for k, v in self.effectors_weapon_states_counters.items()}
+            info["custom_eval_metrics/effectors_weapon_states"]["UTILIZATION"] = (self.effectors_weapon_states_counters[EffectorWeaponState.SHOOTING]  + self.effectors_weapon_states_counters[EffectorWeaponState.RECHARGING])/(self.num_effectors * self.env.tick) * 100
 
 
         return observation, normalized_reward, terminated, truncated, info

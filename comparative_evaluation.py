@@ -24,9 +24,9 @@ def bucket_and_plot(values, features):
     fig.patch.set_facecolor('#121212')
 
     font_size = 14
-    ax.set_title(features["title"], color='white', fontsize=font_size + 2)
-    ax.set_xlabel(features["xlabel"], color='white', fontsize=font_size)
-    ax.set_ylabel("Frequency []", color='white', fontsize=font_size)
+    ax.set_title(features["title"], color='white', fontsize=font_size + 2, pad=20)  # Move title up
+    ax.set_xlabel(features["xlabel"], color='white', fontsize=font_size, labelpad=20)  # Move x label down
+    ax.set_ylabel("Frequency []", color='white', fontsize=font_size, labelpad=20)  # Move y label left
     ax.grid(True, linestyle='--', alpha=0.3)
     ax.tick_params(colors='white', labelsize=font_size)
 
@@ -79,9 +79,9 @@ def scatter_correlation_plot(list_x, list_y, title="Correlation Scatter Plot", x
 
     ax.scatter(x[:int(len(x)/2)], y[:int(len(x)/2)], alpha=0.7, color='#cf3030', edgecolor='white', s=60, label=f"DeepRL")
     ax.scatter(x[int(len(x)/2):], y[int(len(x)/2):], alpha=0.7, color='#aaaaaa', edgecolor='white', s=60, label=f"Classic")
-    ax.set_title(title, color='white', fontsize=16)
-    ax.set_xlabel(xlabel, color='white', fontsize=14)
-    ax.set_ylabel(ylabel, color='white', fontsize=14)
+    ax.set_title(title, color='white', fontsize=16, pad=20)  # Move title up
+    ax.set_xlabel(xlabel, color='white', fontsize=14, labelpad=20)  # Move x label down
+    ax.set_ylabel(ylabel, color='white', fontsize=14, labelpad=20)  # Move y label left
     ax.text(0.05, 0.95, f"Corr coef: {corr_coef:.2f}", transform=ax.transAxes,
         fontsize=14, color='white', verticalalignment='top', bbox=dict(facecolor='#222222', alpha=0.7, edgecolor='none'))
     ax.grid(True, linestyle='--', alpha=0.3)
