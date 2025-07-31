@@ -44,17 +44,37 @@ pip install -r requirements
 
 
 
-| [![Demo Video](https://img.youtube.com/vi/GooNFDk42Nw/0.jpg)](https://youtu.be/GooNFDk42Nw) | ![Alt text](./results/img/damage_distributions.svg) |
-|:---------------------------------------------------:|:-------------------------------------------------:|
-| Demo Video                                | Damage Comparison                                |
+<table>
+  <tr>
+    <td width="50%"><a href="https://youtu.be/GooNFDk42Nw"><img src="https://img.youtube.com/vi/GooNFDk42Nw/0.jpg" alt="Demo Video" width="100%"/></a></td>
+    <td width="50%"><img src="./results/img/damage_distributions.svg" alt="Damage Comparison" width="100%"/></td>
+  </tr>
+  <tr>
+    <td align="center">Demo Video</td>
+    <td align="center">Damage Comparison</td>
+  </tr>
+</table>
 
-| ![Alt text](./results/img/tracking_performance.svg) | ![Alt text](./results/img/weapon_utilization.svg) |
-|:---------------------------------------------------:|:-------------------------------------------------:|
-| Tracking Performance                                | Weapon Utilization                                |
+<table>
+  <tr>
+    <td width="50%"><img src="./results/img/tracking_performance.svg" alt="Tracking Performance" width="100%"/></td>
+    <td width="50%"><img src="./results/img/weapon_utilization.svg" alt="Weapon Utilization" width="100%"/></td>
+  </tr>
+  <tr>
+    <td align="center">Tracking Performance</td>
+    <td align="center">Weapon Utilization</td>
+  </tr>
+</table>
 
-
-| ![Alt text](./results/img/damage_vs_tracking.svg) | ![Alt text](./results/img/damage_vs_weapon_utilization.svg) |
-|:-------------------------------------------------:|:-----------------------------------------------------------:|
-| Damage vs Tracking Correlation                    | Damage vs Weapon Utilization Correlation                    |
+<table>
+  <tr>
+    <td width="50%"><img src="./results/img/damage_vs_tracking.svg" alt="Damage vs Tracking Correlation" width="100%"/></td>
+    <td width="50%"><img src="./results/img/damage_vs_weapon_utilization.svg" alt="Damage vs Weapon Utilization Correlation" width="100%"/></td>
+  </tr>
+  <tr>
+    <td align="center">Damage vs Tracking Correlation</td>
+    <td align="center">Damage vs Weapon Utilization Correlation</td>
+  </tr>
+</table>
 
 # Citation
