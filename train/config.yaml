@@ -1,10 +1,12 @@
-name: PPO_1
+name: MaskedPPO
 
 num_envs: 32
 seed: null
 
-algo: PPO
-policy: CustomPPOPolicy
+#algo: PPO
+algo: MaskablePPO
+#policy: CustomPPOPolicy
+policy: CustomMaskablePPOPolicy
 policy_kwargs:
   features_extractor_class: CustomCombinedExtractor
   share_features_extractor: true
@@ -62,7 +64,7 @@ model_save:
 
 # Training stop
 training_stop:
-  max_time_steps: 200000000
+  max_time_steps: 80000000
   reward_threshold:
     active: false
     value: -200

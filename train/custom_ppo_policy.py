@@ -4,6 +4,7 @@ from torch import nn
 from typing import Callable, List, Tuple
 
 from stable_baselines3.common.policies import ActorCriticPolicy
+from sb3_contrib.common.maskable.policies import MaskableActorCriticPolicy
 
 class CustomNetwork(nn.Module):
     """
@@ -65,8 +66,30 @@ class CustomNetwork(nn.Module):
     def forward_critic(self, features: th.Tensor) -> th.Tensor:
         return self.value_net(features)
 
-
 class CustomPPOPolicy(ActorCriticPolicy):
+    def __init__(
+        self,
+        observation_space: spaces.Space,
+        action_space: spaces.Space,
+        lr_schedule: Callable[[float], float],
+        *args,
+        **kwargs,
+    ):
+        # Disable orthogonal initialization
+        kwargs["ortho_init"] = False
+        self.actor_critic_kwargs = kwargs.pop("actor_critic_kwargs", {})
+        super().__init__(
+            observation_space,
+            action_space,
+            lr_schedule,
+            *args,
+            **kwargs,
+        )
+
+    def _build_mlp_extractor(self) -> None:
+        self.mlp_extractor = CustomNetwork(self.features_dim, **self.actor_critic_kwargs)
+
+class CustomMaskablePPOPolicy(MaskableActorCriticPolicy):
     def __init__(
         self,
         observation_space: spaces.Space,
