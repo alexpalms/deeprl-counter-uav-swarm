@@ -71,7 +71,7 @@ class Environment(gym.Env):
 
         # Effector - Target dynamics
         # Piecewise neutralization probability as a function of the distance between target and aiming vector
-        self.neutralization_dynamics_distance_buckets = np.array([0.0, 0.5, 0.25, 0.5]) # WARNING: this is wrongly defined, causes a vertical drop in prob after 0.25 m distance from 0.85 to 0.2
+        self.neutralization_dynamics_distance_buckets = np.array([0.0, 0.5, 0.25, 0.5])
         self.neutralization_dynamics_prob_buckets = np.array([0.99, 0.75, 0.20, 0.0])
 
 
