@@ -13,7 +13,7 @@ This repository contains a reinforcement learning (RL) framework for the decisio
 
 The RL agents are trained to prioritize drone targets based on their potential threat levels, with the goal of maximizing the effectiveness of the defense system while minimizing collateral damage.
 
-This codebase integrates and completes the work presented in the paper "Reinforcement Learning for Decision-Level Interception Prioritization in Drone Swarm Defense", which can be found [here](https://arxiv.org/abs/2401.12345).
+<!--This codebase integrates and completes the work presented in the paper "Reinforcement Learning for Decision-Level Interception Prioritization in Drone Swarm Defense", which can be found [here](https://arxiv.org/abs/2401.12345).-->
 
 ## Setup
 
