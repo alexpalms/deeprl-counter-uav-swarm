@@ -3,9 +3,9 @@
     <img src="./results/img/final_state.png" alt="Training Curves" width="75%"/>
 </p>
 
-<p align="center">
+<!-- <p align="center">
 <a href="https://arxiv.org/abs/2210.10595"><img src="https://img.shields.io/badge/paper-arXiv:2210.10595-B31B1B?logo=arxiv" alt="Paper"/></a>
-</p>
+</p> -->
 
 # Reinforcement Learning for Decision-Level Interception Prioritization in Drone Swarm Defense
 
@@ -68,7 +68,7 @@ The following image shows a comparison of training curves between PPO and Maskab
     <td align="center" width="100%"><img src="./results/img/training_progression.svg" alt="Training Curves" width="70%"/></td>
   </tr>
   <tr>
-    <td align="center">Training Curves</td>
+    <td align="center">Training performance of PPO vs. MaskedPPO, showing cumulative reward per episode over environment steps. MaskedPPO converges ~10× faster by masking invalid actions (e.g., targeting already-neutralized drones), enabling more efficient and stable learning.</td>
   </tr>
 </table>
 
@@ -105,7 +105,7 @@ The following table and figures are generated using the default parameters of th
   </tr>
   <tr>
     <td align="center"><a href="https://youtu.be/GooNFDk42Nw" target="_blank">Demo Video</a></td>
-    <td align="center">Damage Comparison</td>
+    <td align="center">Distribution of total zone damage percentage for each controller. The RL agent consistently limits damage to critical zones compared to the heuristic baseline and random controller.</td>
   </tr>
 </table>
 
@@ -115,8 +115,11 @@ The following table and figures are generated using the default parameters of th
     <td width="50%"><img src="./results/img/weapon_utilization.svg" alt="Weapon Utilization" width="100%"/></td>
   </tr>
   <tr>
-    <td align="center">Tracking Performance</td>
-    <td align="center">Weapon Utilization</td>
+    <td align="center">a) Tracking Performance</td>
+    <td align="center">b) Weapon Utilization</td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">Comparison of controller performance across two key enabling metrics: (a) target tracking efficiency and (b) weapon utilization. The DeepRL policy consistently achieves superior performance in both categories compared to the classical and random controllers, indicating improved resource allocation and sustained threat engagement over time.</td>
   </tr>
 </table>
 
@@ -126,9 +129,12 @@ The following table and figures are generated using the default parameters of th
     <td width="50%"><img src="./results/img/damage_vs_weapon_utilization.svg" alt="Damage vs Weapon Utilization Correlation" width="100%"/></td>
   </tr>
   <tr>
-    <td align="center">Damage vs Tracking Correlation</td>
-    <td align="center">Damage vs Weapon Utilization Correlation</td>
+    <td align="center">a) Damage vs Tracking Correlation</td>
+    <td align="center">b) Damage vs Weapon Utilization Correlation</td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">Scatter plots showing the relationship between zone damage and: (a) tracking efficiency, and (b) weapon utilization. While both correlations are negative, they are not strongly linear, highlighting that increased engagement opportunities (via better tracking and utilization) generally help reduce damage, but do not fully determine it due to the complex interplay of prioritization and threat behavior.</td>
   </tr>
 </table>
 
-## Citation
+<!-- ## Citation -->
