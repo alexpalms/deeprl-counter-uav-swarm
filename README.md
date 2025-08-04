@@ -3,9 +3,9 @@
     <img src="./results/img/final_state.png" alt="Training Curves" width="75%"/>
 </p>
 
-<!-- <p align="center">
-<a href="https://arxiv.org/abs/2210.10595"><img src="https://img.shields.io/badge/paper-arXiv:2210.10595-B31B1B?logo=arxiv" alt="Paper"/></a>
-</p> -->
+<p align="center">
+<a href="https://arxiv.org/abs/2508.00641"><img src="https://img.shields.io/badge/paper-arXiv:2508.00641-B31B1B?logo=arxiv" alt="Paper"/></a>
+</p>
 
 # Reinforcement Learning for Decision-Level Interception Prioritization in Drone Swarm Defense
 
@@ -137,4 +137,15 @@ The following table and figures are generated using the default parameters of th
   </tr>
 </table>
 
-<!-- ## Citation -->
+## Citation
+```latex
+@misc{palmas2025reinforcementlearningdecisionlevelinterception,
+      title={Reinforcement Learning for Decision-Level Interception Prioritization in Drone Swarm Defense},
+      author={Alessandro Palmas},
+      year={2025},
+      eprint={2508.00641},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2508.00641},
+}
+```
