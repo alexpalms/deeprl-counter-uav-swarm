@@ -9,7 +9,7 @@
 
 <p align="center">
 <a href="https://alexpalms.github.io/projects/02-rl_cuas/"><img src="https://img.shields.io/badge/Blog-Read%20Post-blue" alt="Blog Post"/></a>
-<a href="https://artificialtwin.com/projects/cuas/"><img src="https://img.shields.io/badge/Project-View%20Page-gold" alt="Paper"/></a>
+<a href="https://artificialtwin.com/projects/cuas/"><img src="https://img.shields.io/badge/Project-View%20Page-gold" alt="Company Project"/></a>
 </p>
 
 # Reinforcement Learning for Decision-Level Interception Prioritization in Drone Swarm Defense
