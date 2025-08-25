@@ -7,6 +7,11 @@
 <a href="https://arxiv.org/abs/2508.00641"><img src="https://img.shields.io/badge/paper-arXiv:2508.00641-B31B1B?logo=arxiv" alt="Paper"/></a>
 </p>
 
+<p align="center">
+<a href="https://alexpalms.github.io/projects/02-rl_cuas/"><img src="https://img.shields.io/badge/Blog-Read%20Post-blue" alt="Blog Post"/></a>
+<a href="https://artificialtwin.com/projects/cuas/"><img src="https://img.shields.io/badge/Project-View%20Page-gold" alt="Paper"/></a>
+</p>
+
 # Reinforcement Learning for Decision-Level Interception Prioritization in Drone Swarm Defense
 
 This repository contains a reinforcement learning (RL) framework for the decision-level interception prioritization of drone swarms. The project is designed to evaluate the performance of RL agents against classical heuristic methods in a simulated environment, focusing on the interception of hostile drones by kinetic effectors to minimize damage to sensitive zones.
