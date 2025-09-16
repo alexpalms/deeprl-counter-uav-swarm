@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Vizdoom Run",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/run_vizdoom.py",
+            "args": [
+                "--agent-type", "${input:agent_type}",
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ],
+    "inputs": [
+        {
+            "id": "agent_type",
+            "type": "pickString",
+            "description": "Select the agent type",
+            "options": ["random"],
+            "default": "random"
+        }
+    ]
+}

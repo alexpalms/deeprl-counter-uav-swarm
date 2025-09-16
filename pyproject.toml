@@ -1,0 +1,73 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rl-cuas"
+version = "0.1.0"
+description = "Reinforcement Learning for Decision-Level Interception Prioritization in Drone Swarm Defense"
+readme = "README.md"
+requires-python = ">=3.11"
+# Added with `uv add package_name`
+dependencies = [
+    "gymnasium>=1.2.0",
+    "matplotlib>=3.10.6",
+    "pyyaml>=6.0.2",
+    "sb3-contrib>=2.7.0",
+    "stable-baselines3>=2.7.0",
+    "tensorboard>=2.20.0",
+]
+
+# Added with `uv add --group dev package_name`
+[dependency-groups]
+dev = [
+    "mypy>=1.17.1",
+    "pre-commit>=4.3.0",
+    "pyright>=1.1.405",
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+    "ruff>=0.12.12",
+    "twine>=6.2.0",
+]
+docs = [
+    "furo>=2025.7.19",
+    "myst-parser>=4.0.1",
+    "sphinx>=8.2.3",
+    "sphinx-autobuild>=2025.8.25",
+    "sphinx-autodoc-typehints>=3.2.0",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+project_name = ["py.typed", "data/*"]
+
+[project.scripts]
+project-name-cli = "project_name.cli:main"
+
+[tool.mypy]
+strict = true
+python_version = "3.11"
+files = ["src", "examples", "tests", "docs"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+  "D", "E", "F", "UP", "I", "B", "N", "S", "A", "C4", "T20"
+]
+ignore = ["E501", "D107"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.lint.per-file-ignores]
+"src/**/__init__.py" = ["D104", "D107"]  # ignore module and __init__ docstrings
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"

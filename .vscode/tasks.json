@@ -1,0 +1,86 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Type Hints Checks - Pyright",
+        "type": "shell",
+        "command": "uv run pyright",
+        "group": "none",
+        "problemMatcher": []
+      },
+      {
+        "label": "Type Hints Checks - Mypy",
+        "type": "shell",
+        "command": "uv run mypy --strict",
+        "group": "none",
+        "problemMatcher": []
+      },
+      {
+        "label": "Code Formatting Checks - Ruff check",
+        "type": "shell",
+        "command": "uv run ruff check .",
+        "group": "none",
+        "problemMatcher": []
+      },
+      {
+        "label": "Code Formatting Checks - Ruff format",
+        "type": "shell",
+        "command": "uv run ruff format --check .",
+        "group": "none",
+        "problemMatcher": []
+      },
+      {
+        "label": "All Code Quality Checks",
+        "dependsOn": [
+          "Type Hints Checks - Pyright",
+          "Type Hints Checks - Mypy",
+          "Code Formatting Checks - Ruff check",
+          "Code Formatting Checks - Ruff format"
+        ],
+        "dependsOrder": "sequence",
+        "type": "shell",
+        "command": "echo All checks completed!",
+        "group": "none",
+        "problemMatcher": []
+      },
+      {
+        "label": "Pre-commit Checks",
+        "type": "shell",
+        "command": "uv run pre-commit run --all-files",
+        "group": "none",
+        "problemMatcher": []
+      },
+      {
+        "label": "Pytest",
+        "type": "shell",
+        "command": "uv run pytest",
+        "group": "none",
+        "problemMatcher": []
+      },
+      {
+        "label": "Build Docker Image",
+        "type": "shell",
+        "command": "docker build -t project-name -f docker/Dockerfile .",
+        "group": "none",
+        "problemMatcher": []
+      },
+      {
+        "label": "Run Docker Container",
+        "dependsOn": [
+          "Build Docker Image"
+        ],
+        "dependsOrder": "sequence",
+        "type": "shell",
+        "command": "docker run -it project-name",
+        "group": "none",
+        "problemMatcher": []
+      },
+      {
+        "label": "Docs Autobuild",
+        "type": "shell",
+        "command": "uv run sphinx-autobuild docs/source/ docs/build/html",
+        "group": "none",
+        "problemMatcher": []
+      }
+    ]
+}
