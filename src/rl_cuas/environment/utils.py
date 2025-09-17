@@ -81,14 +81,14 @@ def calculate_delta_azimuth_delta_elevation(
 
 
 def swarm_generate_intermediate_drone_steps(
-    time_step: int, point_1: Vector3D, point_2: Vector3D, max_speed: float
+    time_step: float, point_1: Vector3D, point_2: Vector3D, max_speed: float
 ) -> list[Waypoint]:
     """
     Generate intermediate drone steps.
 
     Parameters
     ----------
-    time_step: int
+    time_step: float
         The time step.
     point_1: Vector3D
         The first point.
@@ -136,7 +136,7 @@ def swarm_generate_drone_trajectory(
     sensitive_max: Vector3D,
     sensitive_zones: list[SensitiveZone],
     swarm_drones_trajectories_number_of_intermediate_points: int,
-    time_step: int,
+    time_step: float,
     max_speed: float,
     zone_idx: int,
 ) -> list[Waypoint]:
@@ -163,7 +163,7 @@ def swarm_generate_drone_trajectory(
         The sensitive zones.
     swarm_drones_trajectories_number_of_intermediate_points: int
         The number of intermediate points.
-    time_step: int
+    time_step: float
         The time step.
     max_speed: float
         The max speed.
@@ -311,7 +311,7 @@ def control_effectors(
     effectors_list: list[Effector],
     swarm_drones_list: list[Drone],
     tick: int,
-    actions: list[int],
+    actions: NDArray[np.int_],
 ) -> None:
     """
     Control the effectors.
@@ -324,13 +324,14 @@ def control_effectors(
         The swarm drones list.
     tick: int
         The tick.
-    actions: list[int]
+    actions: np.ndarray
         The actions.
     """
     for idx, action in enumerate(actions):
-        i_step = min(tick, len(swarm_drones_list[action].trajectory) - 1)
+        action_int: int = int(action)
+        i_step = min(tick, len(swarm_drones_list[action_int].trajectory) - 1)
         effectors_list[idx].assign_target(
-            swarm_drones_list[action].detections[i_step].position
+            swarm_drones_list[action_int].detections[i_step].position
         )
 
 
