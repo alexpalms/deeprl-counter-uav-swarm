@@ -5,19 +5,31 @@ from typing import Any
 import gymnasium as gym
 import numpy as np
 
-from rl_cuas.environment.supporting_classes import (
+from rl_cuas.environment.base_classes import (
     EffectorKinematicState,
     EffectorWeaponState,
 )
+from rl_cuas.environment.environment import Environment
 
 
-class CustomWrapper(gym.Wrapper):
-    """A gym wrapper that normalizes rewards by dividing them by a scaling factor."""
+class CustomWrapper(
+    gym.Wrapper[dict[str, np.ndarray], np.ndarray, dict[str, np.ndarray], np.ndarray]
+):
+    """
+    A gym wrapper that normalizes rewards by dividing them by a scaling factor.
 
-    def __init__(self, env: Any) -> None:
+    Parameters
+    ----------
+    env: Any
+        The environment.
+    """
+
+    env: Environment
+
+    def __init__(self, env: Environment) -> None:
         super().__init__(env)
-        self.max_reward_magnitude = None
-        self.cumulative_damage = None
+        self.max_reward_magnitude: float = 0.0
+        self.cumulative_damage: float = 0.0
         self.effectors_kinematic_states_counters = {
             EffectorKinematicState.CHASING: 0,
             EffectorKinematicState.TRACKING: 0,
@@ -58,7 +70,7 @@ class CustomWrapper(gym.Wrapper):
         for effector in self.env.effectors_list:
             self.effectors_kinematic_states_counters[effector.kinematic_state] += 1
             self.effectors_weapon_states_counters[effector.weapon_state] += 1
-        normalized_reward = abs(float(reward / self.max_reward_magnitude)) * 100
+        normalized_reward = abs(float(reward) / self.max_reward_magnitude) * 100.0
         self.cumulative_damage += normalized_reward
         if terminated or truncated:
             info["custom_eval_metrics/damage"] = self.cumulative_damage
@@ -100,7 +112,7 @@ class CustomWrapper(gym.Wrapper):
             The info.
         """
         observation, info = self.env.reset(**kwargs)
-        self.cumulative_damage = 0
+        self.cumulative_damage = 0.0
         self.effectors_kinematic_states_counters = {
             EffectorKinematicState.CHASING: 0,
             EffectorKinematicState.TRACKING: 0,

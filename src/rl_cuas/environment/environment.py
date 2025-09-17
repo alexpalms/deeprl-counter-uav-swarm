@@ -2,6 +2,7 @@
 
 import math
 from collections import deque
+from typing import Any, cast
 
 import gymnasium as gym
 import numpy as np
@@ -14,6 +15,7 @@ from rl_cuas.environment.base_classes import (
     EffectorWeaponState,
     ExplosiveType,
     Vector3D,
+    Waypoint,
 )
 from rl_cuas.environment.supporting_classes import (
     Detection,
@@ -32,7 +34,7 @@ from rl_cuas.environment.utils import (
 )
 
 
-class Environment(gym.Env):
+class Environment(gym.Env[dict[str, np.ndarray], np.ndarray]):
     """
     Environment class for the CUAS domain.
 
@@ -43,7 +45,8 @@ class Environment(gym.Env):
     """
 
     def __init__(self, render_mode: str = "rgb_array") -> None:
-        self.time_step = 0.1
+        self.time_step: float = 0.1
+        self.tick: int = 0
 
         # Domain limits
         self.domain_bb = BoundingBox(
@@ -84,7 +87,9 @@ class Environment(gym.Env):
         self.swarm_drones_trajectories_number_of_intermediate_points = 1
 
         self.swarm_drones_num = 50
-        self.swarm_drones_features = {
+        self.swarm_drones_features: dict[
+            str, list[list[int | float | ExplosiveType | ChassisType]]
+        ] = {
             "max_speed": [[10, 20, 30], [0.4, 0.4, 0.2]],
             "explosive": [
                 [ExplosiveType.LIGHT, ExplosiveType.MEDIUM, ExplosiveType.STRONG],
@@ -97,7 +102,9 @@ class Environment(gym.Env):
         }
 
         # Detections
-        self.detections_features = {
+        self.detections_features: dict[
+            str, dict[ChassisType | ExplosiveType, float | list[float]]
+        ] = {
             "position_uncertainty": {
                 ChassisType.LARGE: 0.25,
                 ChassisType.MEDIUM: 0.5,
@@ -247,7 +254,26 @@ class Environment(gym.Env):
                     mask[effector_idx * self.swarm_drones_num + idx] = False
         return mask
 
-    def reset(self, seed=None, options=None):
+    def reset(
+        self, *, seed: int | None = None, options: dict[str, Any] | None = None
+    ) -> tuple[dict[str, np.ndarray], dict[str, Any]]:
+        """
+        Reset the environment.
+
+        Parameters
+        ----------
+        seed: int
+            The seed.
+        options: dict
+            The options.
+
+        Returns
+        -------
+        observation: dict[str, np.ndarray]
+            The observation.
+        info: dict[str, Any]
+            The info.
+        """
         # We need the following line to seed self.np_random
         super(type(self), self).reset(seed=seed)
 
@@ -263,24 +289,25 @@ class Environment(gym.Env):
             sensitive_zone.reset(self.np_random)
 
         # Generate swarm
-        self.swarm_drones_list = []
+        self.swarm_drones_list: list[Drone] = []
         self.max_length = 0
-        sampled_parameters = {}
+        sampled_parameters: dict[str, list[ExplosiveType | ChassisType | float]] = {}
 
         # Distribute drones equally between sensitive zones + 1
-        assert self.swarm_drones_num >= (len(self.sensitive_zones) + 1), (
-            "swarm_drones_num needs to be >= len(self.sensitive_zones) + 1"
-        )
+        if self.swarm_drones_num < (len(self.sensitive_zones) + 1):
+            raise ValueError(
+                "swarm_drones_num needs to be >= len(self.sensitive_zones) + 1"
+            )
         self.swarm_drones_per_zone = int(
             self.swarm_drones_num / (len(self.sensitive_zones) + 1)
         )
 
         # Sample drone parameters using vectorized operations
         for key in ["max_speed", "explosive", "chassis"]:
-            sampled_parameters[key] = self.np_random.choice(
-                self.swarm_drones_features[key][0],
+            sampled_parameters[key] = self.np_random.choice(  # type: ignore
+                self.swarm_drones_features[key][0],  # type: ignore
                 size=self.swarm_drones_num,
-                p=self.swarm_drones_features[key][1],
+                p=self.swarm_drones_features[key][1],  # type: ignore
             )
 
         # Precompute zone indices
@@ -289,9 +316,9 @@ class Environment(gym.Env):
         # Instantiate drones and compute their trajectories
         self.swarm_drones_list = [
             Drone(
-                sampled_parameters["max_speed"][i],
-                sampled_parameters["explosive"][i],
-                sampled_parameters["chassis"][i],
+                cast(float, sampled_parameters["max_speed"][i]),
+                cast(ExplosiveType, sampled_parameters["explosive"][i]),
+                cast(ChassisType, sampled_parameters["chassis"][i]),
             )
             for i in range(self.swarm_drones_num)
         ]
@@ -309,7 +336,7 @@ class Environment(gym.Env):
                 self.sensitive_zones,
                 self.swarm_drones_trajectories_number_of_intermediate_points,
                 self.time_step,
-                sampled_parameters["max_speed"][i],
+                cast(float, sampled_parameters["max_speed"][i]),
                 zone_idx,
             )
             if zone_idx < len(self.sensitive_zones):
@@ -317,11 +344,11 @@ class Environment(gym.Env):
             self.max_length = max(self.max_length, len(drone.trajectory))
 
         # Calculate potential damage and max reward magnitude
-        self.max_reward_magnitude = 0
+        self.max_reward_magnitude = 0.0
         sensitive_zone_values = [zone.value for zone in self.sensitive_zones]
 
         for drone in self.swarm_drones_list:
-            end_position = drone.trajectory[-1].position.coords
+            end_position = drone.trajectory[-1].position
             for sensitive_zone, value in zip(
                 self.sensitive_zones, sensitive_zone_values, strict=False
             ):
@@ -339,13 +366,19 @@ class Environment(gym.Env):
             position_uncertainty = detections_features["position_uncertainty"][
                 drone.chassis
             ]
-            chassis = np_random.choice(
-                swarm_drones_features["chassis"][0],
-                p=detections_features["chassis_classification"][drone.chassis],
+            chassis = cast(
+                ChassisType,
+                np_random.choice(
+                    swarm_drones_features["chassis"][0],  # type: ignore
+                    p=detections_features["chassis_classification"][drone.chassis],
+                ),
             )
-            explosive = np_random.choice(
-                swarm_drones_features["explosive"][0],
-                p=detections_features["explosive_classification"][drone.explosive],
+            explosive = cast(
+                ExplosiveType,
+                np_random.choice(
+                    swarm_drones_features["explosive"][0],  # type: ignore
+                    p=detections_features["explosive_classification"][drone.explosive],
+                ),
             )
 
             trajectory_coords = np.array(
@@ -358,7 +391,7 @@ class Environment(gym.Env):
             detections = [
                 Detection(
                     Vector3D(pos[0], pos[1], pos[2]),
-                    position_uncertainty,
+                    cast(float, position_uncertainty),
                     chassis,
                     explosive,
                 )
@@ -385,7 +418,7 @@ class Environment(gym.Env):
         )
 
         if self.render_mode == "human":
-            trajectories = []
+            trajectories: list[list[Waypoint]] = []
             for drone in self.swarm_drones_list:
                 trajectories.append(drone.trajectory)
             self.renderer.plot_drones_trajectories(trajectories)
@@ -393,16 +426,39 @@ class Environment(gym.Env):
 
         return self._get_observation(), self._get_info()
 
-    def step(self, actions):
+    def step(
+        self, action: np.ndarray
+    ) -> tuple[dict[str, np.ndarray], float, bool, bool, dict[str, Any]]:
+        """
+        Step the environment.
+
+        Parameters
+        ----------
+        actions: np.ndarray
+            The actions.
+
+        Returns
+        -------
+        observation: dict[str, np.ndarray]
+            The observation.
+        reward: float
+            The reward.
+        terminated: bool
+            Whether the episode has terminated.
+        truncated: bool
+            Whether the episode has been truncated.
+        info: dict[str, Any]
+            The info.
+        """
         # Apply control
         control_effectors(
-            self.effectors_list, self.swarm_drones_list, self.tick, actions
+            self.effectors_list, self.swarm_drones_list, self.tick, action
         )
 
         # Calculate neutralization
-        for idx, action in enumerate(actions):
+        for idx, action_item in enumerate(action):
             effector = self.effectors_list[idx]
-            drone = self.swarm_drones_list[action]
+            drone = self.swarm_drones_list[int(action_item)]
             if (
                 effector.weapon_state.value != EffectorWeaponState.SHOOTING.value
                 or drone.state.value != DroneState.ACTIVE.value
@@ -453,7 +509,15 @@ class Environment(gym.Env):
             self._get_info(),
         )
 
-    def render(self):
+    def render(self) -> None | Any:
+        """
+        Render the environment.
+
+        Returns
+        -------
+        None | np.ndarray:
+            The rendered environment.
+        """
         if self.render_mode == "human":
             self._render_frame()
             return None
@@ -462,10 +526,19 @@ class Environment(gym.Env):
         else:
             return None
 
-    def close(self):
+    def close(self) -> None:
+        """Close the environment."""
         pass
 
-    def _get_observation(self):
+    def _get_observation(self) -> dict[str, np.ndarray]:
+        """
+        Get the observation.
+
+        Returns
+        -------
+        observation: dict[str, np.ndarray]
+            The observation.
+        """
         return {
             "drones_zones_distance": np.concatenate(
                 self.stacked_obs["drones_zones_distance"], axis=0
@@ -491,8 +564,16 @@ class Environment(gym.Env):
             ),
         }
 
-    def _get_reward(self):
-        reward = 0
+    def _get_reward(self) -> float:
+        """
+        Get the reward.
+
+        Returns
+        -------
+        reward: float
+            The reward.
+        """
+        reward = 0.0
         for drone in self.swarm_drones_list:
             if drone.state.value != DroneState.ACTIVE.value:
                 continue
@@ -504,13 +585,37 @@ class Environment(gym.Env):
 
         return reward
 
-    def _get_episode_termination(self):
+    def _get_episode_termination(self) -> bool:
+        """
+        Get the episode termination.
+
+        Returns
+        -------
+        episode_termination: bool
+            The episode termination.
+        """
         return True if self.tick >= self.max_length else False
 
-    def _get_episode_abortion(self):
+    def _get_episode_abortion(self) -> bool:
+        """
+        Get the episode abortion.
+
+        Returns
+        -------
+        episode_abortion: bool
+            The episode abortion.
+        """
         return False
 
-    def _get_info(self):
+    def _get_info(self) -> dict[str, Any]:
+        """
+        Get the info.
+
+        Returns
+        -------
+        info: dict[str, Any]
+            The info.
+        """
         # Access frequently used variables once
         swarm_drones_list = self.swarm_drones_list
         effectors_list = self.effectors_list
@@ -570,12 +675,14 @@ class Environment(gym.Env):
 
         return info
 
-    def _render_frame(self):
+    def _render_frame(self) -> None | np.ndarray:
+        """Render the frame."""
         self.renderer.plot_drones_positions(self.swarm_drones_list, self.tick)
         self.renderer.plot_effectors_aiming(self.effectors_list)
         self.renderer.update_drones_data(self.swarm_drones_list)
         self.renderer.update_effectors_data(self.effectors_list)
         if self.render_mode == "human":
             self.renderer.update()
+            return None
         else:
             return self.renderer.get_rgb_array()

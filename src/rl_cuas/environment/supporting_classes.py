@@ -168,13 +168,13 @@ class Effector:
         self.max_angular_speeds = [speed * math.pi for speed in max_angular_speeds]
         self._set_rendering_style()
 
-    def reset(self, time_step: int) -> None:
+    def reset(self, time_step: float) -> None:
         """
         Reset the effector.
 
         Parameters
         ----------
-        time_step: int
+        time_step: float
             The time step.
         """
         self.aiming = [0, 0]  # Azimuth - Elevation
