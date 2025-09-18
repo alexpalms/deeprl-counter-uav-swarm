@@ -6,13 +6,16 @@ import os
 import re
 from copy import deepcopy
 
-import yaml
+import numpy as np
+import yaml  # type: ignore
 from stable_baselines3.common.callbacks import (
     BaseCallback,
     EvalCallback,
     StopTrainingOnNoModelImprovement,
     StopTrainingOnRewardThreshold,
 )
+from stable_baselines3.common.monitor import Monitor
+from stable_baselines3.common.vec_env import VecEnv
 
 from rl_cuas.environment.environment import Environment
 from rl_cuas.modifiers.reward_custom_normalize import CustomWrapper
@@ -32,8 +35,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--config",
         type=str,
-        default="./train/config.yaml",
-        help="Type of control policy",
+        required=True,
+        help="Path to the training configuration file",
     )
     opt = parser.parse_args()
     logger.info(opt)
@@ -176,16 +179,19 @@ if __name__ == "__main__":
     best_check_freq = model_save_config["save_best_model"]["frequency"]
     best_on_eval = model_save_config["save_best_model"]["reward_to_use"] == "eval"
     best_monitor_folder = None
-    num_best_envs = None
+    num_best_envs = num_envs
+    eval_env: VecEnv | Monitor[dict[str, np.ndarray], np.ndarray] | None = None
     if autosave:
-        if save_best_model:
+        if save_best_model and num_best_envs is not None:
             if best_on_eval:
-                assert train_config["evaluation"]["active"], (
-                    "Evaluation must be active to save the best model on evaluation"
-                )
-                assert best_check_freq == train_config["evaluation"]["frequency"], (
-                    "Best check frequency must be equal to evaluation frequency"
-                )
+                if not train_config["evaluation"]["active"]:
+                    raise ValueError(
+                        "Evaluation must be active to save the best model on evaluation"
+                    )
+                if not best_check_freq == train_config["evaluation"]["frequency"]:
+                    raise ValueError(
+                        "Best check frequency must be equal to evaluation frequency"
+                    )
                 best_monitor_folder = monitor_folder_eval
                 num_best_envs = train_config["evaluation"]["num_eval_envs"]
             else:
@@ -208,18 +214,20 @@ if __name__ == "__main__":
     callback_on_best = None
     stop_train_callback = None
     if training_stop_config["reward_threshold"]["active"]:
-        assert train_config["evaluation"]["active"], (
-            "Evaluation must be active to stop training on reward threshold"
-        )
+        if not train_config["evaluation"]["active"]:
+            raise ValueError(
+                "Evaluation must be active to stop training on reward threshold"
+            )
         # Stop training when the model reaches the reward threshold
         callback_on_best = StopTrainingOnRewardThreshold(
             reward_threshold=training_stop_config["reward_threshold"]["value"],
             verbose=1,
         )
     if training_stop_config["no_improvement_evals"]["active"]:
-        assert train_config["evaluation"]["active"], (
-            "Evaluation must be active to stop training on no improvement evals"
-        )
+        if not train_config["evaluation"]["active"]:
+            raise ValueError(
+                "Evaluation must be active to stop training on no improvement evals"
+            )
         # Stop training if there is no improvement after more than 3 evaluations
         stop_train_callback = StopTrainingOnNoModelImprovement(
             max_no_improvement_evals=training_stop_config["no_improvement_evals"][
@@ -267,11 +275,12 @@ if __name__ == "__main__":
     agent.save(model_path)
 
     # Free memory
-    assert agent.env is not None
+    if agent is None or agent.env is None:
+        raise ValueError("Agent or environment is None")
     agent.env.close()
     del agent.env
     del agent
 
-    if evaluation_config["active"]:
+    if eval_env is not None and evaluation_config["active"]:
         eval_env.close()
         del eval_env

@@ -2,12 +2,38 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Vizdoom Run",
+            "name": "Training",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/examples/run_vizdoom.py",
+            "program": "${workspaceFolder}/examples/training.py",
             "args": [
-                "--agent-type", "${input:agent_type}",
+                "--config", "${input:config}",
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Inference",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/inference.py",
+            "args": [
+                "--policy", "${input:policy}",
+                "--n_episodes", "${input:n_episodes}",
+                "--seed", "${input:seed}",
+                //"${input:no_render}",
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Comparative Evaluation",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/examples/comparative_evaluation.py",
+            "args": [
+                "--n_episodes", "${input:n_episodes}",
+                "--seeds", "${input:seeds}",
             ],
             "console": "integratedTerminal",
             "justMyCode": true
@@ -15,11 +41,36 @@
     ],
     "inputs": [
         {
-            "id": "agent_type",
+            "id": "config",
             "type": "pickString",
-            "description": "Select the agent type",
-            "options": ["random"],
+            "description": "Select the training configuration file",
+            "options": ["./examples/config.yaml"],
+            "default": "./examples/config.yaml"
+        },
+        {
+            "id": "policy",
+            "type": "pickString",
+            "description": "Select the policy",
+            "options": ["random", "deeprl", "classic"],
             "default": "random"
+        },
+        {
+            "id": "n_episodes",
+            "type": "promptString",
+            "description": "Select the number of episodes",
+            "default": "1"
+        },
+        {
+            "id": "seed",
+            "type": "promptString",
+            "description": "Select the seed",
+            "default": "42"
+        },
+        {
+            "id": "seeds",
+            "type": "promptString",
+            "description": "Select the seeds",
+            "default": "10 20 30 42 50"
         }
     ]
 }
