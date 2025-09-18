@@ -36,9 +36,6 @@ def main(
     -------
     tuple[list[float], list[float], list[float]]
     """
-    if n_episodes > 1:
-        no_render = True
-
     env: Environment | CustomWrapper
     env = Environment(render_mode="human" if not no_render else None)
     env = CustomWrapper(env)
@@ -71,13 +68,23 @@ def main(
                 f"Ep. # {episode_counter + 1} - Cumulative reward [%Damage]: {round(cumulative_reward[episode_counter], 2)}"
             )
             logger.info(
-                "        - Effectors kinematic states: ",
-                round(info["custom_eval_metrics/effectors_kinematic_states"], 2),
+                "        - Effectors kinematic states:",
             )
+            for key, value in info[
+                "custom_eval_metrics/effectors_kinematic_states"
+            ].items():
+                logger.info(
+                    f"             - {key}: {round(value, 2)}",
+                )
             logger.info(
-                "        - Effectors weapon states: ",
-                round(info["custom_eval_metrics/effectors_weapon_states"], 2),
+                "        - Effectors weapon states:",
             )
+            for key, value in info[
+                "custom_eval_metrics/effectors_weapon_states"
+            ].items():
+                logger.info(
+                    f"             - {key}: {round(value, 2)}",
+                )
             effectors_tracking.append(
                 info["custom_eval_metrics/effectors_kinematic_states"]["TRACKING"]
             )
