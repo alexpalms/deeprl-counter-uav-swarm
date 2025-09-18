@@ -38,9 +38,9 @@ class BoundingBox:
     min: Vector3D
     max: Vector3D
 
-    def __init__(self, min: Vector3D, max: Vector3D):
-        self.min = min
-        self.max = max
+    def __init__(self, min_value: Vector3D, max_value: Vector3D):
+        self.min = min_value
+        self.max = max_value
 
 
 class Waypoint:

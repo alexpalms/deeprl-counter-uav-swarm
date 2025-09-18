@@ -5,3 +5,5 @@ sb3-contrib
 pyyaml
 tensorboard
 scipy
+pandas
+pandas-stubs

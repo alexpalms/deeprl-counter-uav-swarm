@@ -5,8 +5,9 @@
             "name": "Training",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/examples/training.py",
+            "program": "${workspaceFolder}/src/rl_cuas/cli.py",
             "args": [
+                "train",
                 "--config", "${input:config}",
             ],
             "console": "integratedTerminal",
@@ -16,8 +17,9 @@
             "name": "Inference",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/examples/inference.py",
+            "program": "${workspaceFolder}/src/rl_cuas/cli.py",
             "args": [
+                "evaluate",
                 "--policy", "${input:policy}",
                 "--n_episodes", "${input:n_episodes}",
                 "--seed", "${input:seed}",
@@ -30,8 +32,9 @@
             "name": "Comparative Evaluation",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/examples/comparative_evaluation.py",
+            "program": "${workspaceFolder}/src/rl_cuas/cli.py",
             "args": [
+                "compare",
                 "--n_episodes", "${input:n_episodes}",
                 "--seeds", "${input:seeds}",
             ],
