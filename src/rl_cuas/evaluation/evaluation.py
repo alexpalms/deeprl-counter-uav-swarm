@@ -1,6 +1,5 @@
 """Inference script."""
 
-import argparse
 import logging
 import statistics
 
@@ -15,7 +14,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def main(
+def evaluation(
     n_episodes: int, seed: int, policy: str, no_render: bool = True
 ) -> tuple[list[float], list[float], list[float]]:
     """
@@ -105,19 +104,3 @@ def main(
         )
 
     return cumulative_reward[:-1], effectors_tracking, effectors_weapon_utilization
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--policy", type=str, default="deeprl", help="Type of control policy"
-    )
-    parser.add_argument(
-        "--n_episodes", type=int, default=1, help="How many episodes to run"
-    )
-    parser.add_argument("--seed", type=int, default=42, help="Seed")
-    parser.add_argument("--no_render", action="store_true", help="Disable rendering")
-    opt = parser.parse_args()
-    logger.info(opt)
-
-    main(opt.n_episodes, opt.seed, opt.policy, opt.no_render)

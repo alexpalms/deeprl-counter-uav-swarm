@@ -1,13 +1,12 @@
 """Training script."""
 
-import argparse
 import logging
 import os
 import re
 from copy import deepcopy
 
 import numpy as np
-import yaml  # type: ignore
+import yaml
 from stable_baselines3.common.callbacks import (
     BaseCallback,
     EvalCallback,
@@ -30,18 +29,17 @@ from rl_cuas.train.misc import (
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--config",
-        type=str,
-        required=True,
-        help="Path to the training configuration file",
-    )
-    opt = parser.parse_args()
-    logger.info(opt)
 
-    with open(opt.config) as file:
+def training(config_file_path: str) -> None:
+    """
+    Training function.
+
+    Parameters
+    ----------
+    config_file_path: str
+        The path to the training configuration file.
+    """
+    with open(config_file_path) as file:
         train_config_in = yaml.safe_load(file)
 
     train_config = deepcopy(train_config_in)
@@ -104,8 +102,6 @@ if __name__ == "__main__":
         ent_coef = train_config["ent_coef"]
         vf_coef = train_config["vf_coef"]
         max_grad_norm = train_config["max_grad_norm"]
-        use_sde = train_config["use_sde"]
-        sde_sample_freq = train_config["sde_sample_freq"]
         target_kl = train_config["target_kl"]
     else:
         raise ValueError(f"Algorithm {train_config['algo']} not supported")

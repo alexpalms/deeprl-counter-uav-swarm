@@ -58,29 +58,59 @@
         "problemMatcher": []
       },
       {
-        "label": "Build Docker Image",
+        "label": "Train",
         "type": "shell",
-        "command": "docker build -t project-name -f docker/Dockerfile .",
+        "command": "uv run rl-cuas-cli train --config ${input:config}",
         "group": "none",
         "problemMatcher": []
       },
       {
-        "label": "Run Docker Container",
-        "dependsOn": [
-          "Build Docker Image"
-        ],
-        "dependsOrder": "sequence",
+        "label": "Evaluate",
         "type": "shell",
-        "command": "docker run -it project-name",
+        "command": "uv run rl-cuas-cli evaluate --policy ${input:policy} --n_episodes ${input:n_episodes} --seed ${input:seed}",
         "group": "none",
         "problemMatcher": []
       },
       {
-        "label": "Docs Autobuild",
+        "label": "Compare",
         "type": "shell",
-        "command": "uv run sphinx-autobuild docs/source/ docs/build/html",
+        "command": "uv run rl-cuas-cli compare --n_episodes ${input:n_episodes} --seeds ${input:seeds}",
         "group": "none",
         "problemMatcher": []
+      }
+    ],
+    "inputs": [
+      {
+        "id": "config",
+        "type": "pickString",
+        "description": "Select the training configuration file",
+        "options": ["./examples/config.yaml"],
+        "default": "./examples/config.yaml"
+      },
+      {
+          "id": "policy",
+          "type": "pickString",
+          "description": "Select the policy",
+          "options": ["random", "deeprl", "classic"],
+          "default": "random"
+      },
+      {
+          "id": "n_episodes",
+          "type": "promptString",
+          "description": "Select the number of episodes",
+          "default": "1"
+      },
+      {
+          "id": "seed",
+          "type": "promptString",
+          "description": "Select the seed",
+          "default": "42"
+      },
+      {
+          "id": "seeds",
+          "type": "promptString",
+          "description": "Select the seeds",
+          "default": "10 20 30 42 50"
       }
     ]
 }

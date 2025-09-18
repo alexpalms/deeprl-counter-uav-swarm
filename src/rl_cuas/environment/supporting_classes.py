@@ -44,8 +44,10 @@ class SensitiveZone:
     value: float = 0.0
     impacts: int = 0
 
-    def __init__(self, id: int, location: Vector3D, radius: float, value: float):
-        self.id = id
+    def __init__(
+        self, identifier: int, location: Vector3D, radius: float, value: float
+    ):
+        self.id = identifier
         self.location = location
         self.radius = radius
         self.value = value
@@ -130,7 +132,7 @@ class Effector:
         The max angular speeds of the effector.
     """
 
-    id: str = ""
+    identifier: str = ""
     location: Vector3D
     aiming: list[float] = [0.0, 0.0]  # Azimuth - Elevation
     shooting_time: float
@@ -157,12 +159,12 @@ class Effector:
 
     def __init__(
         self,
-        id: str,
+        identifier: str,
         location: Vector3D,
         shooting_time: float,
         max_angular_speeds: list[float],
     ):
-        self.id = id
+        self.id = identifier
         self.location = location
         self.shooting_time = shooting_time
         self.max_angular_speeds = [speed * math.pi for speed in max_angular_speeds]
@@ -416,7 +418,7 @@ class ScenarioRenderer:
         self.plot_detections = plot_detections
         self.plot_trajectories = plot_trajectories
 
-        self.fig = plt.figure()  # type: ignore
+        self.fig = plt.figure()  # pyright: ignore[reportUnknownMemberType]
         self.ax = self.fig.add_subplot(111, projection="3d")
         self.ax.set_facecolor(self.bg_color)
         self.fig.patch.set_facecolor(self.bg_color)
@@ -429,22 +431,22 @@ class ScenarioRenderer:
         # Set tick colors
         self.ax.tick_params(axis="x", colors=self.base_line_color)  # pyright: ignore[reportUnknownMemberType]
         self.ax.tick_params(axis="y", colors=self.base_line_color)  # pyright: ignore[reportUnknownMemberType]
-        self.ax.tick_params(axis="z", colors=self.base_line_color)  # pyright: ignore[reportUnknownMemberType]
+        self.ax.tick_params(axis="z", colors=self.base_line_color)  # pyright: ignore[reportUnknownMemberType, reportArgumentType]
 
         # Set color of the axes spines
-        self.ax.xaxis.pane.set_edgecolor(self.base_line_color)  # pyright: ignore[reportUnknownMemberType]
-        self.ax.yaxis.pane.set_edgecolor(self.base_line_color)  # pyright: ignore[reportUnknownMemberType]
+        self.ax.xaxis.pane.set_edgecolor(self.base_line_color)  # pyright: ignore[reportUnknownMemberType, reportAttributeAccessIssue]
+        self.ax.yaxis.pane.set_edgecolor(self.base_line_color)  # pyright: ignore[reportUnknownMemberType, reportAttributeAccessIssue]
         self.ax.zaxis.pane.set_edgecolor(self.base_line_color)
 
         # Set grid line colors
         gridcolor = self.base_line_color if grid else self.bg_color
-        self.ax.xaxis._axinfo["grid"]["color"] = gridcolor  # pyright: ignore[reportUnknownMemberType]
-        self.ax.yaxis._axinfo["grid"]["color"] = gridcolor  # pyright: ignore[reportUnknownMemberType]
-        self.ax.zaxis._axinfo["grid"]["color"] = gridcolor  # pyright: ignore[reportUnknownMemberType]
+        self.ax.xaxis._axinfo["grid"]["color"] = gridcolor  # pyright: ignore[reportUnknownMemberType, reportAttributeAccessIssue]
+        self.ax.yaxis._axinfo["grid"]["color"] = gridcolor  # pyright: ignore[reportUnknownMemberType, reportAttributeAccessIssue]
+        self.ax.zaxis._axinfo["grid"]["color"] = gridcolor  # pyright: ignore[reportUnknownMemberType, reportIndexIssue, reportPrivateUsage]
 
         # Set pane colors to black
-        self.ax.xaxis.pane.set_facecolor(self.bg_color)  # pyright: ignore[reportUnknownMemberType]
-        self.ax.yaxis.pane.set_facecolor(self.bg_color)  # pyright: ignore[reportUnknownMemberType]
+        self.ax.xaxis.pane.set_facecolor(self.bg_color)  # pyright: ignore[reportUnknownMemberType, reportAttributeAccessIssue]
+        self.ax.yaxis.pane.set_facecolor(self.bg_color)  # pyright: ignore[reportUnknownMemberType, reportAttributeAccessIssue]
         self.ax.zaxis.pane.set_facecolor(self.bg_color)
 
         # Draw domain BB

@@ -63,15 +63,17 @@ class Environment(gym.Env[dict[str, np.ndarray], np.ndarray]):
         self.sensitive_zones: list[SensitiveZone] = []
         self.sensitive_zones.append(
             SensitiveZone(
-                id=0, location=Vector3D(x=-30, y=-50, z=0), radius=10, value=2
+                identifier=0, location=Vector3D(x=-30, y=-50, z=0), radius=10, value=2
             )
         )
         self.sensitive_zones.append(
-            SensitiveZone(id=1, location=Vector3D(x=-30, y=50, z=0), radius=30, value=5)
+            SensitiveZone(
+                identifier=1, location=Vector3D(x=-30, y=50, z=0), radius=30, value=5
+            )
         )
         self.sensitive_zones.append(
             SensitiveZone(
-                id=2, location=Vector3D(x=-60, y=-10, z=0), radius=20, value=10
+                identifier=2, location=Vector3D(x=-60, y=-10, z=0), radius=20, value=10
             )
         )
         self.sensitive_zones_num = len(self.sensitive_zones)
@@ -126,7 +128,7 @@ class Environment(gym.Env[dict[str, np.ndarray], np.ndarray]):
         self.effectors_list: list[Effector] = []
         self.effectors_list.append(
             Effector(
-                id="E1",
+                identifier="E1",
                 location=Vector3D(x=0, y=-60, z=0),
                 shooting_time=0.5,
                 max_angular_speeds=[0.5, 0.333],
@@ -134,7 +136,7 @@ class Environment(gym.Env[dict[str, np.ndarray], np.ndarray]):
         )
         self.effectors_list.append(
             Effector(
-                id="E2",
+                identifier="E2",
                 location=Vector3D(x=0, y=-20, z=0),
                 shooting_time=0.5,
                 max_angular_speeds=[0.5, 0.333],
@@ -142,7 +144,7 @@ class Environment(gym.Env[dict[str, np.ndarray], np.ndarray]):
         )
         self.effectors_list.append(
             Effector(
-                id="E3",
+                identifier="E3",
                 location=Vector3D(x=0, y=20, z=0),
                 shooting_time=0.5,
                 max_angular_speeds=[0.5, 0.333],
@@ -150,7 +152,7 @@ class Environment(gym.Env[dict[str, np.ndarray], np.ndarray]):
         )
         self.effectors_list.append(
             Effector(
-                id="E4",
+                identifier="E4",
                 location=Vector3D(x=0, y=60, z=0),
                 shooting_time=0.5,
                 max_angular_speeds=[0.5, 0.333],
@@ -235,7 +237,7 @@ class Environment(gym.Env[dict[str, np.ndarray], np.ndarray]):
                 plot_trajectories=False,
                 plot_detections=False,
                 grid=False,
-                render_mode=render_mode,
+                render_mode=self.render_mode,
             )
 
     def action_masks(self) -> list[bool]:

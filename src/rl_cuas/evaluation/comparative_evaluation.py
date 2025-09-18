@@ -1,14 +1,14 @@
 """Comparative evaluation script."""
 
-import argparse
 import json
 import logging
 from typing import Any
 
 import matplotlib.pyplot as plt
 import numpy as np
-from inference import main as inference_main
 from scipy.stats import norm  # type: ignore
+
+from rl_cuas.evaluation.evaluation import evaluation
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -185,7 +185,7 @@ def scatter_correlation_plot(
     plt.show(block=False)  # pyright: ignore[reportUnknownMemberType]
 
 
-def main(n_episodes: int, seeds: list[int]) -> None:
+def comparative_evaluation(n_episodes: int, seeds: list[int]) -> None:
     """
     Run the comparative evaluation.
 
@@ -228,7 +228,7 @@ def main(n_episodes: int, seeds: list[int]) -> None:
                     cumulative_rewards,
                     effectors_tracking_states,
                     effectors_weapon_utilization,
-                ) = inference_main(n_episodes, seed, policy)
+                ) = evaluation(n_episodes, seed, policy)
                 cumulative_rewards_group[policy].extend(cumulative_rewards)
                 effectors_tracking_group[policy].extend(effectors_tracking_states)
                 effectors_weapon_utilization_group[policy].extend(
@@ -310,21 +310,3 @@ def main(n_episodes: int, seeds: list[int]) -> None:
     bucket_and_plot(cumulative_rewards_group, features[0])
     bucket_and_plot(effectors_tracking_group, features[1])
     bucket_and_plot(effectors_weapon_utilization_group, features[2])
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--n_episodes", type=int, default=100, help="How many episodes to run"
-    )
-    parser.add_argument(
-        "--seeds",
-        nargs="+",
-        type=int,
-        default=[10, 20, 30, 42, 50],
-        help="Evaluation seeds",
-    )
-    opt = parser.parse_args()
-    logger.info(opt)
-
-    main(opt.n_episodes, opt.seeds)

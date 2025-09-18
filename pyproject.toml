@@ -12,6 +12,7 @@ requires-python = ">=3.11"
 dependencies = [
     "gymnasium>=1.2.0",
     "matplotlib>=3.10.6",
+    "pandas>=2.3.2",
     "pyyaml>=6.0.2",
     "sb3-contrib>=2.7.0",
     "scipy>=1.16.2",
@@ -23,12 +24,14 @@ dependencies = [
 [dependency-groups]
 dev = [
     "mypy>=1.17.1",
+        "pandas-stubs>=2.3.2.250827",
     "pre-commit>=4.3.0",
     "pyright>=1.1.405",
     "pytest>=8.4.2",
     "pytest-cov>=7.0.0",
     "ruff>=0.12.12",
     "twine>=6.2.0",
+    "types-pyyaml>=6.0.12.20250915",
 ]
 docs = [
     "furo>=2025.7.19",
@@ -42,15 +45,15 @@ docs = [
 include-package-data = true
 
 [tool.setuptools.package-data]
-project_name = ["py.typed", "data/*"]
+rl_cuas = ["py.typed", "data/*"]
 
 [project.scripts]
-project-name-cli = "project_name.cli:main"
+rl-cuas-cli = "rl_cuas.cli:main"
 
 [tool.mypy]
 strict = true
 python_version = "3.11"
-files = ["src", "examples", "tests", "docs"]
+files = ["src", "examples", "tests"]#, "docs"]
 
 [tool.ruff]
 line-length = 88
