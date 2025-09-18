@@ -1,0 +1,277 @@
+"""Training script."""
+
+import argparse
+import logging
+import os
+import re
+from copy import deepcopy
+
+import yaml
+from stable_baselines3.common.callbacks import (
+    BaseCallback,
+    EvalCallback,
+    StopTrainingOnNoModelImprovement,
+    StopTrainingOnRewardThreshold,
+)
+
+from rl_cuas.environment.environment import Environment
+from rl_cuas.modifiers.reward_custom_normalize import CustomWrapper
+from rl_cuas.train.misc import (
+    AutoSave,
+    CustomMetrics,
+    StartingSteps,
+    linear_schedule,
+    make_sb3_env,
+)
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--config",
+        type=str,
+        default="./train/config.yaml",
+        help="Type of control policy",
+    )
+    opt = parser.parse_args()
+    logger.info(opt)
+
+    with open(opt.config) as file:
+        train_config_in = yaml.safe_load(file)
+
+    train_config = deepcopy(train_config_in)
+    num_envs = train_config["num_envs"]
+
+    local_path = os.path.dirname(os.path.abspath(__file__))
+
+    results_folder = os.path.join(local_path, "runs", train_config["name"])
+    model_folder = os.path.join(results_folder, "model")
+    tensor_board_folder = os.path.join(results_folder, "tb")
+    monitor_folder = os.path.join(results_folder, "monitor")
+    monitor_folder_eval = os.path.join(results_folder, "monitor_eval")
+
+    evaluation_config = train_config["evaluation"]
+    model_save_config = train_config["model_save"]
+    training_stop_config = train_config["training_stop"]
+
+    os.makedirs(model_folder, exist_ok=True)
+
+    env = make_sb3_env(
+        Environment,
+        CustomWrapper,
+        num_envs,
+        seed=train_config["seed"],
+        monitor_folder=monitor_folder,
+    )
+    logger.info(f"Activated {num_envs} environment(s)")
+
+    # Policy param
+    module = globals()
+    policy = module[train_config["policy"]]
+    policy_kwargs = train_config["policy_kwargs"]
+    policy_kwargs["features_extractor_class"] = module[
+        policy_kwargs["features_extractor_class"]
+    ]
+    logger.info("Policy kwargs:", policy_kwargs)
+
+    # Generic algo settings
+    gamma = train_config["gamma"]
+    model_checkpoint_path = train_config["model_checkpoint_path"]
+    learning_rate = linear_schedule(
+        train_config["learning_rate"][0], train_config["learning_rate"][1]
+    )
+
+    if train_config["algo"] == "PPO" or train_config["algo"] == "MaskablePPO":
+        clip_range = linear_schedule(
+            train_config["clip_range"][0], train_config["clip_range"][1]
+        )
+        clip_range_vf = clip_range
+        n_epochs = train_config["n_epochs"]
+        n_steps = train_config["n_steps"]
+        batch_size = train_config["batch_size"]
+        min_steps = num_envs * n_steps
+
+        if training_stop_config["max_time_steps"] <= min_steps:
+            raise ValueError(f"The minimum number of training steps is {min_steps}")
+
+        gae_lambda = train_config["gae_lambda"]
+        normalize_advantage = train_config["normalize_advantage"]
+        ent_coef = train_config["ent_coef"]
+        vf_coef = train_config["vf_coef"]
+        max_grad_norm = train_config["max_grad_norm"]
+        use_sde = train_config["use_sde"]
+        sde_sample_freq = train_config["sde_sample_freq"]
+        target_kl = train_config["target_kl"]
+    else:
+        raise ValueError(f"Algorithm {train_config['algo']} not supported")
+
+    starting_steps = 0
+    reset_num_timesteps = True
+    callbacks: list[BaseCallback] = [CustomMetrics()]
+
+    if model_checkpoint_path is None:
+        agent = module[train_config["algo"]](
+            policy,
+            env,
+            verbose=1,
+            gamma=gamma,
+            batch_size=batch_size,
+            n_epochs=n_epochs,
+            n_steps=n_steps,
+            learning_rate=learning_rate,
+            clip_range=clip_range,
+            clip_range_vf=clip_range_vf,
+            policy_kwargs=policy_kwargs,
+            gae_lambda=gae_lambda,
+            normalize_advantage=normalize_advantage,
+            ent_coef=ent_coef,
+            vf_coef=vf_coef,
+            max_grad_norm=max_grad_norm,
+            target_kl=target_kl,
+            tensorboard_log=tensor_board_folder,
+            device="cpu",
+        )
+    else:
+        # Load the trained agent
+        # Use regex to find the number after the latest underscore
+        match = re.search(r"_(\d+)(?!.*_\d)", model_checkpoint_path)
+        if not match:
+            raise Exception(
+                f"{model_checkpoint_path} should contain a number at the end of the filename indicating the number of training steps."
+            )
+        starting_steps = int(match.group(1))  # Convert the found number to an integer
+
+        agent = module[train_config["algo"]].load(
+            model_checkpoint_path,
+            env=env,
+            batch_size=batch_size,
+            n_epochs=n_epochs,
+            n_steps=n_steps,
+            gamma=gamma,
+            learning_rate=learning_rate,
+            clip_range=clip_range,
+            clip_range_vf=clip_range_vf,
+            gae_lambda=gae_lambda,
+            normalize_advantage=normalize_advantage,
+            ent_coef=ent_coef,
+            vf_coef=vf_coef,
+            max_grad_norm=max_grad_norm,
+            target_kl=target_kl,
+            tensorboard_log=tensor_board_folder,
+            device="cpu",
+        )
+        reset_num_timesteps = False
+        callbacks.append(StartingSteps(starting_steps=starting_steps))
+
+    # Print policy network architecture
+    logger.info("Policy architecture:")
+    logger.info(agent.policy)
+
+    # Create the callback: autosave every USER DEF steps
+    autosave = model_save_config["autosave"]["active"]
+    autosave_freq = model_save_config["autosave"]["frequency"]
+    save_best_model = model_save_config["save_best_model"]["active"]
+    best_check_freq = model_save_config["save_best_model"]["frequency"]
+    best_on_eval = model_save_config["save_best_model"]["reward_to_use"] == "eval"
+    best_monitor_folder = None
+    num_best_envs = None
+    if autosave:
+        if save_best_model:
+            if best_on_eval:
+                assert train_config["evaluation"]["active"], (
+                    "Evaluation must be active to save the best model on evaluation"
+                )
+                assert best_check_freq == train_config["evaluation"]["frequency"], (
+                    "Best check frequency must be equal to evaluation frequency"
+                )
+                best_monitor_folder = monitor_folder_eval
+                num_best_envs = train_config["evaluation"]["num_eval_envs"]
+            else:
+                best_monitor_folder = monitor_folder
+                num_best_envs = num_envs
+        callbacks.append(
+            AutoSave(
+                check_freq=autosave_freq,
+                num_envs=num_envs,
+                save_path=model_folder,
+                filename_prefix="model_",
+                starting_steps=starting_steps,
+                save_best_model=save_best_model,
+                best_check_freq=best_check_freq,
+                monitor_folder=best_monitor_folder,
+                num_best_envs=num_best_envs,
+            )
+        )
+
+    callback_on_best = None
+    stop_train_callback = None
+    if training_stop_config["reward_threshold"]["active"]:
+        assert train_config["evaluation"]["active"], (
+            "Evaluation must be active to stop training on reward threshold"
+        )
+        # Stop training when the model reaches the reward threshold
+        callback_on_best = StopTrainingOnRewardThreshold(
+            reward_threshold=training_stop_config["reward_threshold"]["value"],
+            verbose=1,
+        )
+    if training_stop_config["no_improvement_evals"]["active"]:
+        assert train_config["evaluation"]["active"], (
+            "Evaluation must be active to stop training on no improvement evals"
+        )
+        # Stop training if there is no improvement after more than 3 evaluations
+        stop_train_callback = StopTrainingOnNoModelImprovement(
+            max_no_improvement_evals=training_stop_config["no_improvement_evals"][
+                "max_no_improvement_evals"
+            ],
+            min_evals=training_stop_config["no_improvement_evals"]["min_evals"],
+            verbose=1,
+        )
+
+    if evaluation_config["active"]:
+        # Separate evaluation env
+        num_eval_envs = evaluation_config["num_eval_envs"]
+        eval_env = make_sb3_env(
+            Environment,
+            CustomWrapper,
+            num_eval_envs,
+            seed=train_config["seed"],
+            monitor_folder=monitor_folder,
+        )
+
+        eval_callback = EvalCallback(
+            eval_env,
+            n_eval_episodes=evaluation_config["n_eval_episodes"],
+            eval_freq=evaluation_config["frequency"],
+            deterministic=evaluation_config["deterministic"],
+            callback_on_new_best=callback_on_best,
+            callback_after_eval=stop_train_callback,
+            verbose=1,
+            render=False,
+        )
+
+        callbacks.append(eval_callback)
+
+    # Train the agent
+    time_steps = training_stop_config["max_time_steps"]
+    agent.learn(
+        total_timesteps=time_steps,
+        reset_num_timesteps=reset_num_timesteps,
+        callback=callbacks,
+    )
+
+    # Save the agent
+    new_model_checkpoint = "model_" + str(starting_steps + time_steps)
+    model_path = os.path.join(model_folder, new_model_checkpoint)
+    agent.save(model_path)
+
+    # Free memory
+    assert agent.env is not None
+    agent.env.close()
+    del agent.env
+    del agent
+
+    if evaluation_config["active"]:
+        eval_env.close()
+        del eval_env

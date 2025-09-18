@@ -44,7 +44,7 @@ class Environment(gym.Env[dict[str, np.ndarray], np.ndarray]):
         The mode to render the environment.
     """
 
-    def __init__(self, render_mode: str = "rgb_array") -> None:
+    def __init__(self, render_mode: str | None = "rgb_array") -> None:
         self.time_step: float = 0.1
         self.tick: int = 0
 

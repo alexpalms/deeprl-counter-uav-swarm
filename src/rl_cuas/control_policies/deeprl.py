@@ -1,13 +1,18 @@
 """A deep reinforcement learning agent that selects the drones based on the observation."""
 
 import os
+from importlib import resources
 from typing import Any
 
 import numpy as np
 from sb3_contrib import MaskablePPO
 
+from rl_cuas.control_policies.common import Agent
+from rl_cuas.environment.environment import Environment
+from rl_cuas.modifiers.metric_damage import CustomWrapper
 
-class Agent:
+
+class DeepRlAgent(Agent):
     """
     A deep reinforcement learning agent that selects the drones based on the observation.
 
@@ -19,19 +24,22 @@ class Agent:
     """
 
     def __init__(
-        self, env: Any, model_path: str = "./model.zip", deterministic: bool = True
+        self,
+        env: Environment | CustomWrapper,
+        model_name: str = "model.zip",
+        deterministic: bool = True,
     ):
         self.env: Any = env
         self.deterministic = deterministic
-        model_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), model_path
-        )
-        if not os.path.exists(model_path):
-            raise FileNotFoundError(
-                f"Cannot create agent, policy file '{model_path}' not found!"
-            )
+        with resources.as_file(
+            resources.files("rl_cuas.data") / "model.zip"
+        ) as model_path:
+            if not os.path.exists(model_path):
+                raise FileNotFoundError(
+                    f"Cannot create agent, policy file '{model_path}' not found!"
+                )
 
-        self.agent = MaskablePPO.load(model_path, device="cpu")  # pyright: ignore[reportUnknownMemberType]
+            self.agent = MaskablePPO.load(model_path, device="cpu")  # pyright: ignore[reportUnknownMemberType]
 
     def get_action(self, obs: dict[str, np.ndarray]) -> np.ndarray:
         """
