@@ -8,8 +8,10 @@ import heapq
 
 import numpy as np
 
+from rl_cuas.control_policies.common import Agent
 
-class Agent:
+
+class DistanceBasedAgent(Agent):
     """
     A simple agent that selects the drones with the smallest distances from sensitive zones.
 

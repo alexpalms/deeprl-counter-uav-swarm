@@ -1,13 +1,18 @@
 """Utility functions for the CUAS domain."""
 
+from __future__ import annotations
+
 import math
 from bisect import bisect_left
+from typing import TYPE_CHECKING
 
 import numpy as np
 from numpy.typing import NDArray
 
 from rl_cuas.environment.base_classes import Vector3D, Waypoint
-from rl_cuas.environment.supporting_classes import Drone, Effector, SensitiveZone
+
+if TYPE_CHECKING:
+    from rl_cuas.environment.supporting_classes import Drone, Effector, SensitiveZone
 
 
 def calculate_spherical_coordinates(

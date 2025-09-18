@@ -4,3 +4,4 @@ stable-baselines3
 sb3-contrib
 pyyaml
 tensorboard
+scipy

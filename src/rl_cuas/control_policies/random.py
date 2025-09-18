@@ -3,8 +3,10 @@
 import numpy as np
 from gymnasium import spaces
 
+from rl_cuas.control_policies.common import Agent
 
-class Agent:
+
+class RandomAgent(Agent):
     """A simple agent that selects the drones randomly."""
 
     def __init__(self) -> None:

@@ -1,27 +1,43 @@
-from gymnasium import spaces
-import torch as th
-from torch import nn
-from typing import List
+"""Custom extractors."""
 
+from typing import cast
+
+import torch as th
+from gymnasium import spaces
+from stable_baselines3.common.preprocessing import (
+    get_flattened_obs_dim,  # pyright: ignore[reportUnknownVariableType]
+)
 from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
-from stable_baselines3.common.preprocessing import get_flattened_obs_dim
+from torch import nn
+
 
 class CustomFlatExtractor(BaseFeaturesExtractor):
-    def __init__(self, observation_space: spaces.Box, layers: List[int]=[64, 64]):
+    """
+    Custom flat extractor.
+
+    Parameters
+    ----------
+    observation_space: spaces.Box
+        The observation space.
+    layers: list[int]
+        The layers.
+    """
+
+    def __init__(self, observation_space: spaces.Box, layers: list[int]):
         # We do not know features-dim here before going over all the items,
         # so put something dummy for now. PyTorch requires calling
         # nn.Module.__init__ before adding modules
-        super().__init__(observation_space, features_dim=1)
+        super().__init__(observation_space, features_dim=1)  # pyright: ignore[reportUnknownMemberType]
 
-        assert (isinstance(layers, List) and len(layers) > 0), "`layers` in `CustomFlatExtractor` needs to be a non-empty `List[int]`"
-
-        assert (isinstance(observation_space, spaces.Box) and len(observation_space.shape) == 1), \
-                            "Only one dimensional `Box` spaces (i.e. flattened) are supported"
+        if len(observation_space.shape) != 1:
+            raise ValueError(
+                "Only one dimensional `Box` spaces (i.e. flattened) are supported"
+            )
 
         self.flatten = nn.Flatten()
 
         # Obs FC processing
-        obs_extractor_layers = []
+        obs_extractor_layers: list[nn.Module] = []
         prev_size = observation_space.shape[0]
         for size in layers:
             obs_extractor_layers.append(nn.Linear(prev_size, size))
@@ -33,24 +49,46 @@ class CustomFlatExtractor(BaseFeaturesExtractor):
         # Update the features dim manually
         self._features_dim = layers[-1]
 
-    def forward(self, observations) -> th.Tensor:
+    def forward(self, observations: th.Tensor) -> th.Tensor:
+        """
+        Forward pass of the extractor.
 
+        Parameters
+        ----------
+        observations: th.Tensor
+            The observations.
+
+        Returns
+        -------
+        th.Tensor:
+            The extracted features.
+        """
         observations_tensor = self.flatten(observations)
 
         # Return a (B, self._features_dim) PyTorch tensor, where B is batch dimension.
-        return self.obs_extractor(observations_tensor)
+        return cast(th.Tensor, self.obs_extractor(observations_tensor))
+
 
 class CustomCombinedExtractor(BaseFeaturesExtractor):
-    def __init__(self, observation_space: spaces.Dict, layers: List[int]=[64, 64]):
+    """
+    Custom combined extractor.
+
+    Parameters
+    ----------
+    observation_space: spaces.Dict
+        The observation space.
+    layers: list[int]
+        The layers.
+    """
+
+    def __init__(self, observation_space: spaces.Dict, layers: list[int]) -> None:
         # We do not know features-dim here before going over all the items,
         # so put something dummy for now. PyTorch requires calling
         # nn.Module.__init__ before adding modules
-        super().__init__(observation_space, features_dim=1)
-
-        assert (isinstance(layers, List) and len(layers) > 0), "`layers` in `CustomFlatSpaceExtractor` needs to be a non-empty `List[int]`"
+        super().__init__(observation_space, features_dim=1)  # pyright: ignore[reportUnknownMemberType]
 
         # Observation flattening
-        obs_flatten = {}
+        obs_flatten: dict[str, nn.Module] = {}
         obs_concat_size = 0
         for key, subspace in observation_space.spaces.items():
             obs_flatten[key] = nn.Flatten()
@@ -59,7 +97,7 @@ class CustomCombinedExtractor(BaseFeaturesExtractor):
         self.obs_flatten = nn.ModuleDict(obs_flatten)
 
         # Obs FC processing
-        obs_extractor_layers = []
+        obs_extractor_layers: list[nn.Module] = []
         prev_size = obs_concat_size
         for size in layers:
             obs_extractor_layers.append(nn.Linear(prev_size, size))
@@ -71,12 +109,24 @@ class CustomCombinedExtractor(BaseFeaturesExtractor):
         # Update the features dim manually
         self._features_dim = layers[-1]
 
-    def forward(self, observations) -> th.Tensor:
+    def forward(self, observations: dict[str, th.Tensor]) -> th.Tensor:
+        """
+        Forward pass of the extractor.
 
-        embedding_list = []
+        Parameters
+        ----------
+        observations: th.Tensor
+            The observations.
+
+        Returns
+        -------
+        th.Tensor:
+            The extracted features.
+        """
+        embedding_list: list[th.Tensor] = []
 
         # Obs extractor
-        obs_tensor_list = []
+        obs_tensor_list: list[th.Tensor] = []
         for key, obs_flattener in self.obs_flatten.items():
             obs_tensor_list.append(obs_flattener(observations[key]))
 
