@@ -18,19 +18,19 @@
 <img src="https://img.shields.io/badge/testing-pytest-2A6DB0?logo=python&logoColor=white" alt="Pytest"/>
 </p>
 <p align="center">
-<a href="https://github.com/alexpalms/python-project-template/actions/workflows/type-hints-check.yaml"><img src="https://img.shields.io/github/actions/workflow/status/alexpalms/python-project-template/type-hints-check.yaml?label=type%20hints&logo=github" alt="Type Hints"/></a>
-<a href="https://github.com/alexpalms/python-project-template/actions/workflows/code-formatting-check.yaml"><img src="https://img.shields.io/github/actions/workflow/status/alexpalms/python-project-template/code-formatting-check.yaml?label=code%20formatting&logo=github" alt="Code Formatting"/></a>
-<a href="https://github.com/alexpalms/python-project-template/actions/workflows/pytest.yaml"><img src="https://img.shields.io/github/actions/workflow/status/alexpalms/python-project-template/pytest.yaml?label=pytest&logo=github" alt="Pytest"/></a>
-<a href="https://codecov.io/github/alexpalms/python-project-template"><img src="https://codecov.io/github/alexpalms/python-project-template/graph/badge.svg?token=4817P3HFDN" alt="PytestCoverage"/></a>
+<a href="https://github.com/alexpalms/deeprl-counter-uav-swarm/actions/workflows/type-hints-check.yaml"><img src="https://img.shields.io/github/actions/workflow/status/alexpalms/deeprl-counter-uav-swarm/type-hints-check.yaml?label=type%20hints&logo=github" alt="Type Hints"/></a>
+<a href="https://github.com/alexpalms/deeprl-counter-uav-swarm/actions/workflows/code-formatting-check.yaml"><img src="https://img.shields.io/github/actions/workflow/status/alexpalms/deeprl-counter-uav-swarm/code-formatting-check.yaml?label=code%20formatting&logo=github" alt="Code Formatting"/></a>
+<a href="https://github.com/alexpalms/deeprl-counter-uav-swarm/actions/workflows/pytest.yaml"><img src="https://img.shields.io/github/actions/workflow/status/alexpalms/deeprl-counter-uav-swarm/pytest.yaml?label=pytest&logo=github" alt="Pytest"/></a>
+<a href="https://codecov.io/github/alexpalms/deeprl-counter-uav-swarm"><img src="https://codecov.io/github/alexpalms/deeprl-counter-uav-swarm/graph/badge.svg?token=4817P3HFDN" alt="PytestCoverage"/></a>
 </p>
 
 <p align="center">
 <img src="https://img.shields.io/badge/supported%20os-linux-blue" alt="Supported OS"/>
 <img src="https://img.shields.io/badge/python-%3E%3D3.11-blue" alt="Python Version"/>
-<img src="https://img.shields.io/github/last-commit/alexpalms/python-project-template/main?label=repo%20latest%20update&logo=readthedocs" alt="Latest Repo Update"/>
+<img src="https://img.shields.io/github/last-commit/alexpalms/deeprl-counter-uav-swarm/main?label=repo%20latest%20update&logo=readthedocs" alt="Latest Repo Update"/>
 </p>
 <p align="center">
-<img src="https://img.shields.io/github/license/alexpalms/python-project-template?cacheBust=1" alt="Python Version"/>
+<img src="https://img.shields.io/github/license/alexpalms/deeprl-counter-uav-swarm?cacheBust=1" alt="Python Version"/>
 </p>
 
 
