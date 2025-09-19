@@ -8,9 +8,31 @@
 </p>
 
 <p align="center">
-<a href="https://alexpalms.github.io/projects/02-rl_cuas/"><img src="https://img.shields.io/badge/Blog-Read%20Post-blue" alt="Blog Post"/></a>
-<a href="https://artificialtwin.com/projects/cuas/"><img src="https://img.shields.io/badge/Project-View%20Page-gold" alt="Company Project"/></a>
+<a href="https://alexpalms.github.io/projects/02-rl_cuas/"><img src="https://img.shields.io/badge/blog-read%20post-blue" alt="Blog Post"/></a>
+<a href="https://artificialtwin.com/projects/cuas/"><img src="https://img.shields.io/badge/project-view%20page-gold" alt="Company Project"/></a>
 </p>
+
+<p align="center">
+<img src="https://img.shields.io/badge/type%20checking-mypy-2A6DB0?logo=python&logoColor=white" alt="Type Hints"/>
+<img src="https://img.shields.io/badge/linting-ruff-4B8BBE?logo=python&logoColor=white" alt="Code Formatting"/>
+<img src="https://img.shields.io/badge/testing-pytest-2A6DB0?logo=python&logoColor=white" alt="Pytest"/>
+</p>
+<p align="center">
+<a href="https://github.com/alexpalms/python-project-template/actions/workflows/type-hints-check.yaml"><img src="https://img.shields.io/github/actions/workflow/status/alexpalms/python-project-template/type-hints-check.yaml?label=type%20hints&logo=github" alt="Type Hints"/></a>
+<a href="https://github.com/alexpalms/python-project-template/actions/workflows/code-formatting-check.yaml"><img src="https://img.shields.io/github/actions/workflow/status/alexpalms/python-project-template/code-formatting-check.yaml?label=code%20formatting&logo=github" alt="Code Formatting"/></a>
+<a href="https://github.com/alexpalms/python-project-template/actions/workflows/pytest.yaml"><img src="https://img.shields.io/github/actions/workflow/status/alexpalms/python-project-template/pytest.yaml?label=pytest&logo=github" alt="Pytest"/></a>
+<a href="https://codecov.io/github/alexpalms/python-project-template"><img src="https://codecov.io/github/alexpalms/python-project-template/graph/badge.svg?token=4817P3HFDN" alt="PytestCoverage"/></a>
+</p>
+
+<p align="center">
+<img src="https://img.shields.io/badge/supported%20os-linux-blue" alt="Supported OS"/>
+<img src="https://img.shields.io/badge/python-%3E%3D3.11-blue" alt="Python Version"/>
+<img src="https://img.shields.io/github/last-commit/alexpalms/python-project-template/main?label=repo%20latest%20update&logo=readthedocs" alt="Latest Repo Update"/>
+</p>
+<p align="center">
+<img src="https://img.shields.io/github/license/alexpalms/python-project-template?cacheBust=1" alt="Python Version"/>
+</p>
+
 
 # Reinforcement Learning for Decision-Level Interception Prioritization in Drone Swarm Defense
 
@@ -22,15 +44,36 @@ The RL agents are trained to prioritize drone targets based on their potential t
 
 ## Setup
 
-To get started, create a new Python environment and install the required dependencies. The following commands will set up a Conda environment and install all necessary packages, including PyTorch for CPU-only systems and other requirements listed in the `requirements.txt` file:
-```
-conda create -n cuas python=3.11
-conda activate cuas
-```
-```
-pip install --no-cache-dir torch==2.5.1+cpu --index-url https://download.pytorch.org/whl/cpu; # For CPU-only systems
-pip install -r requirements
-```
+**Everything in this guide will assume you are using Linux OS**
+
+### UV
+
+- Install `uv` ([Ref](https://github.com/astral-sh/uv)) in the general python environment (not inside virtual envs)
+  ```
+  pip install uv
+  ```
+- Add `export PATH="$HOME/.local/bin:$PATH"` to `~/.bashrc`
+- Create a new virtual Python environment
+  ```
+  uv venv
+  ```
+- Install package with dependencies
+  ```
+  uv pip install -e .
+  ```
+
+### Conda + PIP
+
+The instructions contained in the next sections of the Readme will assume UV is used, but if you prefer to use Conda & PIP you can install the package as follows and adjust the next sections steps accordingly:
+- Create a new virtual Python environment:
+  ```
+  conda create -n cuas python=3.11
+  conda activate cuas
+  ```
+- Install the required dependencies. The following commands will set up a Conda environment and install all necessary packages listed in the `requirements.txt` file:
+  ```
+  pip install -r requirements.txt
+  ```
 
 ## Simulator
 
@@ -55,10 +98,10 @@ The following figures illustrate key aspects of the simulation environment. The 
 
 ## Training
 
-To train a new reinforcement learning agent, configure your training parameters in [`train/config.yaml`](train/config.yaml) and run the training script:
+To train a new reinforcement learning agent, configure your training parameters in a config file like [`examples/config.yaml`](examples/config.yaml) and run the training via the CLI:
 
 ```
-python training.py --config train/config.yaml
+uv run rl-cuas-cli train --config ./examples/config.yaml
 ```
 
 The script supports resuming from checkpoints, automatic saving, evaluation during training, and early stopping based on reward thresholds or lack of improvement. Training and evaluation environments, model checkpoints, and logs are managed automatically according to your configuration.
@@ -66,7 +109,6 @@ The script supports resuming from checkpoints, automatic saving, evaluation duri
 Two versions of the PPO algorithm are available: the original PPO and the MaskablePPO (which supports action masking for invalid actions), both provided via Stable Baselines 3. You can select which algorithm to use by setting the `algo` field in your configuration file.
 
 The following image shows a comparison of training curves between PPO and MaskablePPO:
-
 
 <table>
   <tr>
@@ -79,19 +121,19 @@ The following image shows a comparison of training curves between PPO and Maskab
 
 ## Evaluation and Results
 
-To run a single inference episode and visualize or evaluate a specific policy (e.g., DeepRL, Classic, or Random), use the `inference.py` script. This allows you to observe the agent's behavior and performance in the environment. For example, to run a single episode with the DeepRL policy and rendering enabled, use:
+To run a single inference episode and visualize or evaluate a specific policy (e.g., DeepRL, Classic, or Random), use the `evaluate` command of the CLI. This allows you to observe the agent's behavior and performance in the environment. For example, to run a single episode with the DeepRL policy and rendering enabled, use:
 ```
-python inference.py --policy deeprl --n_episodes 1 --seed 42
+uv run rl-cuas-cli evaluate --policy deeprl --n_episodes 1 --seed 42
 ```
 You can change the `--policy` argument to `classic` or `random` to evaluate other policies. Use the `--no_render` flag to disable visualization and speed up evaluation.
 
-For a comprehensive comparison of all policies and automatic generation of evaluation figures and metrics, use the `comparative_evaluation.py` script. This script runs multiple episodes for each policy, aggregates the results, and produces all relevant plots and summary tables for damage, tracking, and weapon utilization:
+For a comprehensive comparison of all policies and automatic generation of evaluation figures and metrics, use the `compare` command of the CLI. This runs multiple episodes for each policy, aggregates the results, and produces all relevant plots and summary tables for damage, tracking, and weapon utilization:
 ```
-python comparative_evaluation.py --n_episodes 100 --seeds 10 20 30 42 50
+uv run rl-cuas-cli compare --n_episodes 100 --seeds 10 20 30 42 50
 ```
 The script will save the results and figures in the appropriate folders, allowing for easy analysis and reproducibility of the evaluation.
 
-The following table and figures are generated using the default parameters of the comparative evaluation script. They provide a comprehensive summary of the main evaluation metrics and and visual comparisons between the different policies.
+The following table and figures are generated using the default parameters of the `compare` command. They provide a comprehensive summary of the main evaluation metrics and and visual comparisons between the different policies.
 
 
 | Metric                        | Classical Heuristic | Reinforcement Learning |

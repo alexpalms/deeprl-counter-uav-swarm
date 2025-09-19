@@ -4,9 +4,12 @@ import logging
 import os
 import re
 from copy import deepcopy
+from pathlib import Path
 
 import numpy as np
 import yaml
+from sb3_contrib import MaskablePPO
+from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import (
     BaseCallback,
     EvalCallback,
@@ -18,6 +21,8 @@ from stable_baselines3.common.vec_env import VecEnv
 
 from rl_cuas.environment.environment import Environment
 from rl_cuas.modifiers.reward_custom_normalize import CustomWrapper
+from rl_cuas.train.custom_extractors import CustomCombinedExtractor, CustomFlatExtractor
+from rl_cuas.train.custom_ppo_policy import CustomMaskablePPOPolicy, CustomPPOPolicy
 from rl_cuas.train.misc import (
     AutoSave,
     CustomMetrics,
@@ -25,6 +30,17 @@ from rl_cuas.train.misc import (
     linear_schedule,
     make_sb3_env,
 )
+
+CLASS_REGISTRY_POLICY: dict[str, type] = {
+    "CustomPPOPolicy": CustomPPOPolicy,
+    "CustomMaskablePPOPolicy": CustomMaskablePPOPolicy,
+    "CustomFlatExtractor": CustomFlatExtractor,
+    "CustomCombinedExtractor": CustomCombinedExtractor,
+}
+CLASS_REGISTRY_ALGO: dict[str, type[PPO | MaskablePPO]] = {
+    "PPO": PPO,
+    "MaskablePPO": MaskablePPO,
+}
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -45,9 +61,9 @@ def training(config_file_path: str) -> None:
     train_config = deepcopy(train_config_in)
     num_envs = train_config["num_envs"]
 
-    local_path = os.path.dirname(os.path.abspath(__file__))
+    working_dir = Path.cwd()
 
-    results_folder = os.path.join(local_path, "runs", train_config["name"])
+    results_folder = os.path.join(working_dir, "runs", train_config["name"])
     model_folder = os.path.join(results_folder, "model")
     tensor_board_folder = os.path.join(results_folder, "tb")
     monitor_folder = os.path.join(results_folder, "monitor")
@@ -69,10 +85,9 @@ def training(config_file_path: str) -> None:
     logger.info(f"Activated {num_envs} environment(s)")
 
     # Policy param
-    module = globals()
-    policy = module[train_config["policy"]]
+    policy = CLASS_REGISTRY_POLICY[train_config["policy"]]
     policy_kwargs = train_config["policy_kwargs"]
-    policy_kwargs["features_extractor_class"] = module[
+    policy_kwargs["features_extractor_class"] = CLASS_REGISTRY_POLICY[
         policy_kwargs["features_extractor_class"]
     ]
     logger.info("Policy kwargs:", policy_kwargs)
@@ -111,7 +126,7 @@ def training(config_file_path: str) -> None:
     callbacks: list[BaseCallback] = [CustomMetrics()]
 
     if model_checkpoint_path is None:
-        agent = module[train_config["algo"]](
+        agent = CLASS_REGISTRY_ALGO[train_config["algo"]](
             policy,
             env,
             verbose=1,
@@ -142,7 +157,7 @@ def training(config_file_path: str) -> None:
             )
         starting_steps = int(match.group(1))  # Convert the found number to an integer
 
-        agent = module[train_config["algo"]].load(
+        agent = CLASS_REGISTRY_ALGO[train_config["algo"]].load(  # pyright: ignore[reportUnknownMemberType]
             model_checkpoint_path,
             env=env,
             batch_size=batch_size,
@@ -259,7 +274,7 @@ def training(config_file_path: str) -> None:
 
     # Train the agent
     time_steps = training_stop_config["max_time_steps"]
-    agent.learn(
+    agent.learn(  # pyright: ignore[reportUnknownMemberType]
         total_timesteps=time_steps,
         reset_num_timesteps=reset_num_timesteps,
         callback=callbacks,
@@ -271,7 +286,7 @@ def training(config_file_path: str) -> None:
     agent.save(model_path)
 
     # Free memory
-    if agent is None or agent.env is None:
+    if agent.env is None:
         raise ValueError("Agent or environment is None")
     agent.env.close()
     del agent.env
