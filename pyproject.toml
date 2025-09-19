@@ -5,10 +5,22 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "rl-cuas"
 version = "0.1.0"
+keywords = ["reinforcement-learning", "decision-support-systems", "intelligent-control", "drone-swarm-defense", "simulation-based-evaluation", "critical-infrastructure-protection"]
+maintainers = [
+  { name="Alessandro Palmas", email="alex@artificialtwin.com" },
+]
+authors = [
+  { name="Alessandro Palmas", email="alex@artificialtwin.com" },
+]
 description = "Reinforcement Learning for Decision-Level Interception Prioritization in Drone Swarm Defense"
-readme = "README.md"
+readme = { file = "README.md", content-type = "text/markdown"}
+license = { text = "MIT" }
+
 requires-python = ">=3.11"
-# Added with `uv add package_name`
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: Linux",
+]
 dependencies = [
     "gymnasium>=1.2.0",
     "matplotlib>=3.10.6",
@@ -24,7 +36,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "mypy>=1.17.1",
-        "pandas-stubs>=2.3.2.250827",
+    "pandas-stubs>=2.3.2.250827",
     "pre-commit>=4.3.0",
     "pyright>=1.1.405",
     "pytest>=8.4.2",
@@ -41,6 +53,10 @@ docs = [
     "sphinx-autodoc-typehints>=3.2.0",
 ]
 
+[project.urls]
+Homepage = "https://github.com/alexpalms/deeprl-counter-uav-swarm/"
+Issues = "https://github.com/alexpalms/deeprl-counter-uav-swarm/issues"
+
 [tool.setuptools]
 include-package-data = true
 
@@ -49,6 +65,17 @@ rl_cuas = ["py.typed", "data/*"]
 
 [project.scripts]
 rl-cuas-cli = "rl_cuas.cli:main"
+
+[tool.pyright]
+include = ["src", "examples", "tests", "docs"]
+typeCheckingMode = "strict"
+reportUnusedVariable = "error"
+reportMissingImports = "error"
+reportMissingParameterType = "error"
+reportMissingTypeArgument = "error"
+reportUntypedFunctionDecorator = "error"
+reportUntypedFunctionCall = "error"
+reportMissingTypeStubs = "none"
 
 [tool.mypy]
 strict = true
