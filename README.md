@@ -139,9 +139,9 @@ The following table and figures are generated using the default parameters of th
 
 | Metric                        | Classical Heuristic | Reinforcement Learning |
 |-------------------------------|:------------------:|:---------------------:|
-| Total Damage (Avg) [%]        | 50.34              | **41.30**             |
-| In-Tracking Time (Avg) [%]    | 52.87              | **65.59**             |
-| Weapon Utilization (Avg) [%]  | 54.35              | **62.79**             |
+| Total Damage (Avg) [%]        | 52.14              | **40.70**             |
+| In-Tracking Time (Avg) [%]    | 53.29              | **66.81**             |
+| Weapon Utilization (Avg) [%]  | 54.99              | **63.29**             |
 
 *Table: Evaluation Results. 100 Episodes × 5 Seeds*
 
