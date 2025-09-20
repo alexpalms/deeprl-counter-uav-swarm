@@ -55,7 +55,7 @@ class Environment(gym.Env[dict[str, np.ndarray], np.ndarray]):
 
         # Sensitive zones area
         self.sensitive_zones_bb = BoundingBox(
-            Vector3D(x=-100, y=-100, z=0), Vector3D(x=0, y=100, z=50)
+            Vector3D(x=-100, y=-100, z=0), Vector3D(x=0, y=100, z=0)
         )
 
         # Sensitive zones
