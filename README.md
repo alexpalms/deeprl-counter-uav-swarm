@@ -73,6 +73,7 @@ The instructions contained in the next sections of the Readme will assume UV is 
 - Install the required dependencies. The following commands will set up a Conda environment and install all necessary packages listed in the `requirements.txt` file:
   ```
   pip install -r requirements.txt
+  pip install -e .
   ```
 
 ## Simulator

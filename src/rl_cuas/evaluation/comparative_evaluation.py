@@ -2,6 +2,8 @@
 
 import json
 import logging
+import os
+from pathlib import Path
 from typing import Any
 
 import matplotlib.pyplot as plt
@@ -115,7 +117,7 @@ def bucket_and_plot(values: dict[str, list[float]], features: dict[str, str]) ->
 
     ax.legend(handles=legend_handles, fontsize=font_size - 2)  # pyright: ignore[reportUnknownArgumentType, reportUnknownMemberType]
     plt.tight_layout()
-    plt.savefig(features["image"] + ".svg", format="svg", dpi=300, bbox_inches="tight")  # pyright: ignore[reportUnknownMemberType]
+    plt.savefig(f"{features['image']}.svg", format="svg", dpi=300, bbox_inches="tight")  # pyright: ignore[reportUnknownMemberType]
     plt.show(block=False)  # pyright: ignore[reportUnknownMemberType]
 
 
@@ -196,11 +198,13 @@ def comparative_evaluation(n_episodes: int, seeds: list[int]) -> None:
     seeds: list[int]
         The seeds to use for the evaluation.
     """
-    # Check if results file exists, if not, run the evaluation
-    import os
+    working_dir = Path.cwd()
+
+    results_folder = os.path.join(working_dir, "runs", "comparative_evaluation")
+    os.makedirs(results_folder, exist_ok=True)
 
     comparative_evaluation_results_path = os.path.join(
-        os.path.dirname(__file__), "./comparative_evaluation_results.json"
+        results_folder, "comparative_evaluation_results.json"
     )
 
     if not os.path.exists(comparative_evaluation_results_path):
@@ -273,7 +277,7 @@ def comparative_evaluation(n_episodes: int, seeds: list[int]) -> None:
         title="Damage vs Tracking",
         xlabel="Cumulative Damage [%]",
         ylabel="In-Tracking Time [%]",
-        image_name="damage_vs_tracking",
+        image_name=os.path.join(results_folder, "damage_vs_tracking"),
     )
     scatter_correlation_plot(
         np.concatenate(
@@ -288,23 +292,23 @@ def comparative_evaluation(n_episodes: int, seeds: list[int]) -> None:
         title="Damage vs Weapon Utilization",
         xlabel="Cumulative Damage [%]",
         ylabel="Weapon Utilization [%]",
-        image_name="damage_vs_weapon_utilization",
+        image_name=os.path.join(results_folder, "damage_vs_weapon_utilization"),
     )
     features = [
         {
             "title": "Comparison of Damage Distributions",
             "xlabel": "Cumulative Damage [%]",
-            "image": "damage_distributions",
+            "image": os.path.join(results_folder, "damage_distributions"),
         },
         {
             "title": "Comparison of Effectors Kinematic Performance",
             "xlabel": "In-Tracking Time [%]",
-            "image": "tracking_performance",
+            "image": os.path.join(results_folder, "tracking_performance"),
         },
         {
             "title": "Comparison of Effectors Weapon Utilization",
             "xlabel": "Weapon Utilization [%]",
-            "image": "weapon_utilization",
+            "image": os.path.join(results_folder, "weapon_utilization"),
         },
     ]
     bucket_and_plot(cumulative_rewards_group, features[0])
