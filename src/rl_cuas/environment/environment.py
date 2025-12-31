@@ -222,7 +222,7 @@ class Environment(gym.Env[dict[str, np.ndarray], np.ndarray]):
         )
 
         self.action_space = spaces.MultiDiscrete(
-            [self.swarm_drones_num for _ in range(self.effectors_num)], dtype=np.int32
+            [self.swarm_drones_num for _ in range(self.effectors_num)], dtype=np.int64
         )
 
         self.render_mode = render_mode
