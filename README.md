@@ -13,7 +13,6 @@
 </p>
 
 <p align="center">
-<img src="https://img.shields.io/badge/type%20checking-mypy-2A6DB0?logo=python&logoColor=white" alt="Type Hints"/>
 <img src="https://img.shields.io/badge/linting-ruff-4B8BBE?logo=python&logoColor=white" alt="Code Formatting"/>
 <img src="https://img.shields.io/badge/testing-pytest-2A6DB0?logo=python&logoColor=white" alt="Pytest"/>
 </p>
@@ -26,7 +25,7 @@
 
 <p align="center">
 <img src="https://img.shields.io/badge/supported%20os-linux-blue" alt="Supported OS"/>
-<img src="https://img.shields.io/badge/python-%3E%3D3.11-blue" alt="Python Version"/>
+<img src="https://img.shields.io/badge/python-%3E%3D3.12-blue" alt="Python Version"/>
 <img src="https://img.shields.io/github/last-commit/alexpalms/deeprl-counter-uav-swarm/main?label=repo%20latest%20update&logo=readthedocs" alt="Latest Repo Update"/>
 </p>
 <p align="center">
@@ -46,35 +45,10 @@ The RL agents are trained to prioritize drone targets based on their potential t
 
 **Everything in this guide will assume you are using Linux OS**
 
-### UV
-
-- Install `uv` ([Ref](https://github.com/astral-sh/uv)) in the general python environment (not inside virtual envs)
-  ```
-  pip install uv
-  ```
-- Add `export PATH="$HOME/.local/bin:$PATH"` to `~/.bashrc`
-- Create a new virtual Python environment
-  ```
-  uv venv
-  ```
-- Install package with dependencies
-  ```
-  uv pip install -e .
-  ```
-
-### Conda + PIP
-
-The instructions contained in the next sections of the Readme will assume UV is used, but if you prefer to use Conda & PIP you can install the package as follows and adjust the next sections steps accordingly:
-- Create a new virtual Python environment:
-  ```
-  conda create -n cuas python=3.11
-  conda activate cuas
-  ```
-- Install the required dependencies. The following commands will set up a Conda environment and install all necessary packages listed in the `requirements.txt` file:
-  ```
-  pip install -r requirements.txt
-  pip install -e .
-  ```
+- Install `uv` ([Ref](https://github.com/astral-sh/uv)) (E.g. `curl -LsSf https://astral.sh/uv/install.sh | sh`)
+- Create a new virtual Python environment: `uv venv`
+- Install package with dependencies `uv pip install -e .`
+- (Optional) Install package with group dependencies `uv pip install -e . --group dev`
 
 ## Simulator
 

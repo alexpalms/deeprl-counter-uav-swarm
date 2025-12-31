@@ -1,9 +1,0 @@
-gymnasium
-matplotlib
-stable-baselines3
-sb3-contrib
-pyyaml
-tensorboard
-scipy
-pandas
-pandas-stubs

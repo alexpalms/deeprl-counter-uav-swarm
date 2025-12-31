@@ -17,7 +17,7 @@ def test_random_agent() -> None:
     obs, _ = env.reset()
     while True:
         action = agent.get_action(obs)
-        assert env.action_space.contains(action)  # noqa: S101
+        assert env.action_space.contains(action)
         obs, _, terminated, truncated, _ = env.step(action)
         if terminated or truncated:
             break
@@ -33,7 +33,7 @@ def test_classic_agent() -> None:
     obs, _ = env.reset()
     while True:
         action = agent.get_action(obs)
-        assert env.action_space.contains(action)  # noqa: S101
+        assert env.action_space.contains(action)
         obs, _, terminated, truncated, _ = env.step(action)
         if terminated or truncated:
             break
@@ -49,7 +49,7 @@ def test_deeprl_agent() -> None:
     obs, _ = env.reset()
     while True:
         action = agent.get_action(obs)
-        assert env.action_space.contains(action)  # noqa: S101
+        assert env.action_space.contains(action)
         obs, _, terminated, truncated, _ = env.step(action)
         if terminated or truncated:
             break

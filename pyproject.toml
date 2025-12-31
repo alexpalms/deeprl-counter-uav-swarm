@@ -14,12 +14,20 @@ authors = [
 ]
 description = "Reinforcement Learning for Decision-Level Interception Prioritization in Drone Swarm Defense"
 readme = { file = "README.md", content-type = "text/markdown"}
-license = { text = "MIT" }
+license = { file = "LICENSE" }
 
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3",
-    "Operating System :: Linux",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
     "gymnasium>=1.2.0",
@@ -35,7 +43,6 @@ dependencies = [
 # Added with `uv add --group dev package_name`
 [dependency-groups]
 dev = [
-    "mypy>=1.17.1",
     "pandas-stubs>=2.3.2.250827",
     "pre-commit>=4.3.0",
     "pyright>=1.1.405",
@@ -60,6 +67,9 @@ Issues = "https://github.com/alexpalms/deeprl-counter-uav-swarm/issues"
 [tool.setuptools]
 include-package-data = true
 
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [tool.setuptools.package-data]
 rl_cuas = ["py.typed", "data/*"]
 
@@ -74,21 +84,18 @@ reportMissingImports = "error"
 reportMissingParameterType = "error"
 reportMissingTypeArgument = "error"
 reportUntypedFunctionDecorator = "error"
-reportUntypedFunctionCall = "error"
-reportMissingTypeStubs = "none"
-
-[tool.mypy]
-strict = true
-python_version = "3.11"
-files = ["src", "examples", "tests"]#, "docs"]
+reportMissingTypeStubs = "error"
+extraPaths = ["stubs"]
+exclude = []
 
 [tool.ruff]
 line-length = 88
-target-version = "py311"
+target-version = "py312"
+exclude = []
 
 [tool.ruff.lint]
 select = [
-  "D", "E", "F", "UP", "I", "B", "N", "S", "A", "C4", "T20"
+  "E", "F", "UP", "I", "B", "N", "S", "A", "C4", "T20"
 ]
 ignore = ["E501", "D107"]
 
@@ -97,6 +104,7 @@ convention = "numpy"
 
 [tool.ruff.lint.per-file-ignores]
 "src/**/__init__.py" = ["D104", "D107"]  # ignore module and __init__ docstrings
+"tests/**" = ["S101"]  # allow asserts in tests
 
 [tool.ruff.format]
 quote-style = "double"

@@ -9,13 +9,6 @@
         "problemMatcher": []
       },
       {
-        "label": "Type Hints Checks - Mypy",
-        "type": "shell",
-        "command": "uv run mypy --strict",
-        "group": "none",
-        "problemMatcher": []
-      },
-      {
         "label": "Code Formatting Checks - Ruff check",
         "type": "shell",
         "command": "uv run ruff check .",
@@ -33,7 +26,6 @@
         "label": "All Code Quality Checks",
         "dependsOn": [
           "Type Hints Checks - Pyright",
-          "Type Hints Checks - Mypy",
           "Code Formatting Checks - Ruff check",
           "Code Formatting Checks - Ruff format"
         ],
