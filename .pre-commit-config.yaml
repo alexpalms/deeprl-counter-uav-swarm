@@ -1,12 +1,4 @@
 repos:
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.17.1
-    hooks:
-      - id: mypy
-        language: system
-        entry: mypy
-        args: ["--strict", "--cache-dir=/dev/null"]
-        additional_dependencies: []  # example: type stubs
   - repo: https://github.com/RobertCraigie/pyright-python
     rev: v1.1.405
     hooks:

@@ -23,5 +23,5 @@ If applicable, add logs or screenshots.
 
 ### Environment (please complete the following information):
 - OS: [e.g. Ubuntu 22.04]
-- Python version: [e.g. 3.11]
+- Python version: [e.g. 3.12]
 - Package version: [e.g. 0.1.0]
