@@ -418,7 +418,7 @@ class ScenarioRenderer:
         self.plot_detections = plot_detections
         self.plot_trajectories = plot_trajectories
 
-        self.fig = plt.figure()  # pyright: ignore[reportUnknownMemberType]
+        self.fig = plt.figure()  # pyright:ignore[reportUnknownMemberType]
         self.ax = self.fig.add_subplot(111, projection="3d")
         self.ax.set_facecolor(self.bg_color)
         self.fig.patch.set_facecolor(self.bg_color)
@@ -429,30 +429,30 @@ class ScenarioRenderer:
         self.ax.zaxis.label.set_color(self.base_line_color)
 
         # Set tick colors
-        self.ax.tick_params(axis="x", colors=self.base_line_color)  # pyright: ignore[reportUnknownMemberType]
-        self.ax.tick_params(axis="y", colors=self.base_line_color)  # pyright: ignore[reportUnknownMemberType]
-        self.ax.tick_params(axis="z", colors=self.base_line_color)  # pyright: ignore[reportUnknownMemberType, reportArgumentType]
+        self.ax.tick_params(axis="x", colors=self.base_line_color)  # pyright:ignore[reportUnknownMemberType]
+        self.ax.tick_params(axis="y", colors=self.base_line_color)  # pyright:ignore[reportUnknownMemberType]
+        self.ax.tick_params(axis="z", colors=self.base_line_color)  # pyright:ignore[reportUnknownMemberType, reportArgumentType]
 
         # Set color of the axes spines
-        self.ax.xaxis.pane.set_edgecolor(self.base_line_color)  # pyright: ignore[reportUnknownMemberType, reportAttributeAccessIssue]
-        self.ax.yaxis.pane.set_edgecolor(self.base_line_color)  # pyright: ignore[reportUnknownMemberType, reportAttributeAccessIssue]
+        self.ax.xaxis.pane.set_edgecolor(self.base_line_color)  # pyright:ignore[reportUnknownMemberType, reportAttributeAccessIssue]
+        self.ax.yaxis.pane.set_edgecolor(self.base_line_color)  # pyright:ignore[reportUnknownMemberType, reportAttributeAccessIssue]
         self.ax.zaxis.pane.set_edgecolor(self.base_line_color)
 
         # Set grid line colors
         gridcolor = self.base_line_color if grid else self.bg_color
-        self.ax.xaxis._axinfo["grid"]["color"] = gridcolor  # pyright: ignore[reportUnknownMemberType, reportAttributeAccessIssue]
-        self.ax.yaxis._axinfo["grid"]["color"] = gridcolor  # pyright: ignore[reportUnknownMemberType, reportAttributeAccessIssue]
-        self.ax.zaxis._axinfo["grid"]["color"] = gridcolor  # pyright: ignore[reportUnknownMemberType, reportIndexIssue, reportPrivateUsage]
+        self.ax.xaxis._axinfo["grid"]["color"] = gridcolor  # pyright:ignore[reportUnknownMemberType, reportAttributeAccessIssue]
+        self.ax.yaxis._axinfo["grid"]["color"] = gridcolor  # pyright:ignore[reportUnknownMemberType, reportAttributeAccessIssue]
+        self.ax.zaxis._axinfo["grid"]["color"] = gridcolor  # pyright:ignore[reportUnknownMemberType, reportIndexIssue, reportPrivateUsage]
 
         # Set pane colors to black
-        self.ax.xaxis.pane.set_facecolor(self.bg_color)  # pyright: ignore[reportUnknownMemberType, reportAttributeAccessIssue]
-        self.ax.yaxis.pane.set_facecolor(self.bg_color)  # pyright: ignore[reportUnknownMemberType, reportAttributeAccessIssue]
+        self.ax.xaxis.pane.set_facecolor(self.bg_color)  # pyright:ignore[reportUnknownMemberType, reportAttributeAccessIssue]
+        self.ax.yaxis.pane.set_facecolor(self.bg_color)  # pyright:ignore[reportUnknownMemberType, reportAttributeAccessIssue]
         self.ax.zaxis.pane.set_facecolor(self.bg_color)
 
         # Draw domain BB
-        self.ax.set_xlim(domain_bb.min.coords[0], domain_bb.max.coords[0])  # pyright: ignore[reportUnknownMemberType]
-        self.ax.set_ylim(domain_bb.min.coords[1], domain_bb.max.coords[1])  # pyright: ignore[reportUnknownMemberType]
-        self.ax.set_zlim(domain_bb.min.coords[2], domain_bb.max.coords[2])  # pyright: ignore[reportUnknownMemberType]
+        self.ax.set_xlim(domain_bb.min.coords[0], domain_bb.max.coords[0])  # pyright:ignore[reportUnknownMemberType]
+        self.ax.set_ylim(domain_bb.min.coords[1], domain_bb.max.coords[1])  # pyright:ignore[reportUnknownMemberType]
+        self.ax.set_zlim(domain_bb.min.coords[2], domain_bb.max.coords[2])  # pyright:ignore[reportUnknownMemberType]
 
         # Store the scatter plot objects
         self.drones_scatter_plot: list[PathCollection] = []
@@ -483,12 +483,12 @@ class ScenarioRenderer:
             self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
             # Add the plot frame to the PanedWindow
-            self.paned_window.add(self.plot_frame)  # pyright: ignore[reportUnknownMemberType]
+            self.paned_window.add(self.plot_frame)  # pyright:ignore[reportUnknownMemberType]
 
-            self.create_tree_views_frame(sensitive_zones)  # pyright: ignore[reportUnknownMemberType]
+            self.create_tree_views_frame(sensitive_zones)  # pyright:ignore[reportUnknownMemberType]
 
             # Add the tree frame to the PanedWindow
-            self.paned_window.add(self.tree_frame)  # pyright: ignore[reportUnknownMemberType]
+            self.paned_window.add(self.tree_frame)  # pyright:ignore[reportUnknownMemberType]
 
             # Configure grid resizing behavior
             self.master.grid_rowconfigure(0, weight=1)
@@ -528,13 +528,13 @@ class ScenarioRenderer:
         # Create a custom style for the Treeviews
         self.style = ttk.Style()
         self.style.theme_use("default")  # Use the default theme
-        self.style.configure(  # pyright: ignore[reportUnknownMemberType]
+        self.style.configure(  # pyright:ignore[reportUnknownMemberType]
             "Treeview",
             background=self.bg_color,
             foreground=self.base_line_color,
             fieldbackground=self.bg_color,
         )
-        self.style.map("Treeview", background=[("selected", "blue")])  # pyright: ignore[reportUnknownMemberType]
+        self.style.map("Treeview", background=[("selected", "blue")])  # pyright:ignore[reportUnknownMemberType]
 
         # Stats
         # Title
@@ -609,7 +609,7 @@ class ScenarioRenderer:
         # Scrollbar
         self.scrollbar_effectors = ttk.Scrollbar(self.tree_frame, orient="vertical")
         self.scrollbar_effectors.grid(row=6, column=1, sticky="ns")
-        command_effectors: Any = self.effectors_tree.yview  # pyright: ignore[reportUnknownMemberType,reportUnknownVariableType]
+        command_effectors: Any = self.effectors_tree.yview  # pyright:ignore[reportUnknownMemberType,reportUnknownVariableType]
         self.scrollbar_effectors.config(command=command_effectors)
         self.effectors_tree.configure(yscrollcommand=self.scrollbar_effectors.set)
         # Configure tag colors
@@ -649,7 +649,7 @@ class ScenarioRenderer:
         # Scrollbar
         self.scrollbar_drones = ttk.Scrollbar(self.tree_frame, orient="vertical")
         self.scrollbar_drones.grid(row=8, column=1, sticky="ns")
-        command_drones: Any = self.drones_tree.yview  # pyright: ignore[reportUnknownMemberType,reportUnknownVariableType]
+        command_drones: Any = self.drones_tree.yview  # pyright:ignore[reportUnknownMemberType,reportUnknownVariableType]
         self.scrollbar_drones.config(command=command_drones)
         self.drones_tree.configure(yscrollcommand=self.scrollbar_drones.set)
         # Configure tag colors
@@ -688,10 +688,10 @@ class ScenarioRenderer:
 
         for effector in effector_list:
             # Effector Marker
-            effector_scatter_plot = self.ax.scatter(  # pyright: ignore[reportUnknownMemberType]
+            effector_scatter_plot = self.ax.scatter(  # pyright:ignore[reportUnknownMemberType]
                 [effector.location.coords[0]],
                 [effector.location.coords[1]],
-                [effector.location.coords[2]],  # pyright: ignore[reportArgumentType]
+                [effector.location.coords[2]],  # pyright:ignore[reportArgumentType]
                 s=self.marker_size,
                 marker=effector.marker,
                 color=effector.color,
@@ -717,7 +717,7 @@ class ScenarioRenderer:
                 effector.location.coords[2]
                 + effector.aiming_line_length * math.sin(effector.aiming[1]),
             ]
-            aiming_line = self.ax.plot(  # pyright: ignore[reportUnknownMemberType]
+            aiming_line = self.ax.plot(  # pyright:ignore[reportUnknownMemberType]
                 x, y, z, linestyle=effector.aiming_line_style, color=effector.color
             )
             self.aiming_lines.append(aiming_line)
@@ -764,7 +764,7 @@ class ScenarioRenderer:
                     for i_waypoint in range(len(trajectory))
                 ]
 
-                self.ax.plot(x, y, z, linestyle="--", color=self.base_line_color)  # pyright: ignore[reportUnknownMemberType]
+                self.ax.plot(x, y, z, linestyle="--", color=self.base_line_color)  # pyright:ignore[reportUnknownMemberType]
 
     def plot_drones_positions(self, swarm_drones_list: list[Drone], tick: int) -> None:
         """
@@ -794,7 +794,7 @@ class ScenarioRenderer:
                 text.remove()
 
             # Add title at the top with nice background
-            self.ax.text2D(  # pyright: ignore[reportUnknownMemberType]
+            self.ax.text2D(  # pyright:ignore[reportUnknownMemberType]
                 0.5,
                 0.98,
                 "Counter Drone Swarm Scenario",
@@ -807,7 +807,7 @@ class ScenarioRenderer:
             )
 
             damage_text = f"Damage: {damage_percentage}%"
-            self.ax.text2D(  # pyright: ignore[reportUnknownMemberType]
+            self.ax.text2D(  # pyright:ignore[reportUnknownMemberType]
                 0.05,
                 0.05,
                 damage_text,
@@ -820,7 +820,7 @@ class ScenarioRenderer:
             )
 
             # Impacted drones (red accent)
-            self.ax.text2D(  # pyright: ignore[reportUnknownMemberType]
+            self.ax.text2D(  # pyright:ignore[reportUnknownMemberType]
                 0.98,
                 0.14,
                 f"Impacted: {impacted_count}",
@@ -833,7 +833,7 @@ class ScenarioRenderer:
             )
 
             # Active drones (yellow accent)
-            self.ax.text2D(  # pyright: ignore[reportUnknownMemberType]
+            self.ax.text2D(  # pyright:ignore[reportUnknownMemberType]
                 0.98,
                 0.08,
                 f"Active: {active_count}",
@@ -846,7 +846,7 @@ class ScenarioRenderer:
             )
 
             # Neutralized drones (cyan accent)
-            self.ax.text2D(  # pyright: ignore[reportUnknownMemberType]
+            self.ax.text2D(  # pyright:ignore[reportUnknownMemberType]
                 0.98,
                 0.02,
                 f"Neutralized: {neutralized_count}",
@@ -860,20 +860,20 @@ class ScenarioRenderer:
 
         for drone in swarm_drones_list:
             idx = min(tick, len(drone.trajectory) - 1)
-            drone_scatter_plot = self.ax.scatter(  # pyright: ignore[reportUnknownMemberType]
+            drone_scatter_plot = self.ax.scatter(  # pyright:ignore[reportUnknownMemberType]
                 [drone.trajectory[idx].position.coords[0]],
                 [drone.trajectory[idx].position.coords[1]],
-                [drone.trajectory[idx].position.coords[2]],  # pyright: ignore[reportArgumentType]
+                [drone.trajectory[idx].position.coords[2]],  # pyright:ignore[reportArgumentType]
                 s=self.marker_size,
                 marker=drone.marker,
                 color=drone.marker_color,
             )
             self.drones_scatter_plot.append(drone_scatter_plot)
             if self.plot_detections:
-                drone_scatter_plot_detection = self.ax.scatter(  # pyright: ignore[reportUnknownMemberType]
+                drone_scatter_plot_detection = self.ax.scatter(  # pyright:ignore[reportUnknownMemberType]
                     [drone.detections[idx].position.coords[0]],
                     [drone.detections[idx].position.coords[1]],
-                    [drone.detections[idx].position.coords[2]],  # pyright: ignore[reportArgumentType]
+                    [drone.detections[idx].position.coords[2]],  # pyright:ignore[reportArgumentType]
                     s=self.marker_size,
                     marker=drone.detections[idx].marker,
                     color=drone.detections[idx].marker_color,
@@ -929,9 +929,9 @@ class ScenarioRenderer:
             The color of the circle.
         """
         # Plot circles on the ground at z=0
-        circle = plt.Circle((center_x, center_y), radius, color=color, alpha=0.5)  # pyright: ignore[reportPrivateImportUsage]
+        circle = plt.Circle((center_x, center_y), radius, color=color, alpha=0.5)  # pyright:ignore[reportPrivateImportUsage]
         self.ax.add_patch(circle)
-        art3d.pathpatch_2d_to_3d(circle, z=int(altitude), zdir="z")  # pyright: ignore[reportUnknownMemberType]
+        art3d.pathpatch_2d_to_3d(circle, z=int(altitude), zdir="z")  # pyright:ignore[reportUnknownMemberType]
 
     def plot_square(self, square_bb: BoundingBox) -> None:
         """
@@ -943,9 +943,9 @@ class ScenarioRenderer:
             The bounding box of the square.
         """
         # Draw a square at z=0
-        square = plt.Rectangle((-5, -5), 10, 10, color=self.base_line_color, alpha=0.3)  # pyright: ignore[reportPrivateImportUsage]
+        square = plt.Rectangle((-5, -5), 10, 10, color=self.base_line_color, alpha=0.3)  # pyright:ignore[reportPrivateImportUsage]
         self.ax.add_patch(square)
-        art3d.pathpatch_2d_to_3d(square, z=-10, zdir="z")  # pyright: ignore[reportUnknownMemberType]
+        art3d.pathpatch_2d_to_3d(square, z=-10, zdir="z")  # pyright:ignore[reportUnknownMemberType]
 
     def plot_cube(self, cube_bb: BoundingBox) -> None:
         """
@@ -1095,7 +1095,7 @@ class ScenarioRenderer:
             color=self.base_line_color,
             alpha=0.0,
         )
-        self.ax.add_collection3d(cube)  # pyright: ignore[reportUnknownMemberType]
+        self.ax.add_collection3d(cube)  # pyright:ignore[reportUnknownMemberType]
 
     def calculate_drones_data(
         self, swarm_drones_list: list[Drone]

@@ -8,7 +8,7 @@ from typing import Any
 
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.stats import norm  # pyright: ignore[reportMissingTypeStubs]
+from scipy.stats import norm  # pyright:ignore[reportMissingTypeStubs]
 
 from rl_cuas.evaluation.evaluation import evaluation
 
@@ -42,21 +42,21 @@ def bucket_and_plot(values: dict[str, list[float]], features: dict[str, str]) ->
 
     # Set dark theme
     plt.style.use("dark_background")
-    fig, ax = plt.subplots(figsize=(12, 6))  # pyright: ignore[reportUnknownMemberType]
+    fig, ax = plt.subplots(figsize=(12, 6))  # pyright:ignore[reportUnknownMemberType]
     fig.patch.set_facecolor("#121212")
 
     font_size = 14
-    ax.set_title(  # pyright: ignore[reportUnknownMemberType]
+    ax.set_title(  # pyright:ignore[reportUnknownMemberType]
         features["title"], color="white", fontsize=font_size + 2, pad=20
     )  # Move title up
-    ax.set_xlabel(  # pyright: ignore[reportUnknownMemberType]
+    ax.set_xlabel(  # pyright:ignore[reportUnknownMemberType]
         features["xlabel"], color="white", fontsize=font_size, labelpad=20
     )  # Move x label down
-    ax.set_ylabel(  # pyright: ignore[reportUnknownMemberType]
+    ax.set_ylabel(  # pyright:ignore[reportUnknownMemberType]
         "Frequency []", color="white", fontsize=font_size, labelpad=20
     )  # Move y label left
-    ax.grid(True, linestyle="--", alpha=0.3)  # pyright: ignore[reportUnknownMemberType]
-    ax.tick_params(colors="white", labelsize=font_size)  # pyright: ignore[reportUnknownMemberType]
+    ax.grid(True, linestyle="--", alpha=0.3)  # pyright:ignore[reportUnknownMemberType]
+    ax.tick_params(colors="white", labelsize=font_size)  # pyright:ignore[reportUnknownMemberType]
 
     legend_handles = []
     for group_idx, (arr, base_color, group_name) in enumerate(
@@ -67,7 +67,7 @@ def bucket_and_plot(values: dict[str, list[float]], features: dict[str, str]) ->
         offset = (group_idx - 1) * width  # -1, 0, 1 for left, center, right
 
         # Plot histogram
-        ax.bar(  # pyright: ignore[reportUnknownMemberType]
+        ax.bar(  # pyright:ignore[reportUnknownMemberType]
             centers + offset,
             hist,
             width=width,
@@ -81,15 +81,15 @@ def bucket_and_plot(values: dict[str, list[float]], features: dict[str, str]) ->
         # Gaussian fit
         mu, std = arr_np.mean(), arr_np.std()
         x = np.linspace(overall_min, overall_max, 1000)
-        pdf = norm.pdf(x, mu, std) * len(arr) * (bins[1] - bins[0])  # pyright: ignore[reportUnknownMemberType]
-        (_,) = ax.plot(x, pdf, linestyle="--", linewidth=2.0, color=base_color)  # pyright: ignore[reportUnknownMemberType]
+        pdf = norm.pdf(x, mu, std) * len(arr) * (bins[1] - bins[0])  # pyright:ignore[reportUnknownMemberType]
+        (_,) = ax.plot(x, pdf, linestyle="--", linewidth=2.0, color=base_color)  # pyright:ignore[reportUnknownMemberType]
 
         # Vertical line for the mean
-        ax.axvline(mu, color=base_color, linestyle=":", linewidth=2.0)  # pyright: ignore[reportUnknownMemberType]
+        ax.axvline(mu, color=base_color, linestyle=":", linewidth=2.0)  # pyright:ignore[reportUnknownMemberType]
 
         # Add legend entry for Gaussian curve with mean and std
-        legend_handles.append(  # pyright: ignore[reportUnknownMemberType]
-            plt.Line2D(  # pyright: ignore[reportPrivateImportUsage]
+        legend_handles.append(  # pyright:ignore[reportUnknownMemberType]
+            plt.Line2D(  # pyright:ignore[reportPrivateImportUsage]
                 [0],
                 [0],
                 color=base_color,
@@ -103,22 +103,22 @@ def bucket_and_plot(values: dict[str, list[float]], features: dict[str, str]) ->
     for bar, group_name in reversed(
         list(zip(ax.containers, group_names, strict=False))
     ):
-        legend_handles.insert(  # pyright: ignore[reportUnknownMemberType]
+        legend_handles.insert(  # pyright:ignore[reportUnknownMemberType]
             0,
-            plt.Rectangle(  # pyright: ignore[reportPrivateImportUsage]
+            plt.Rectangle(  # pyright:ignore[reportPrivateImportUsage]
                 (0, 0),
                 1,
                 1,
-                color=bar.patches[0].get_facecolor(),  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType,reportAttributeAccessIssue]
+                color=bar.patches[0].get_facecolor(),  # pyright:ignore[reportUnknownMemberType,reportUnknownArgumentType,reportAttributeAccessIssue]
                 alpha=0.6,
                 label=group_name + " Histogram",
             ),
         )
 
-    ax.legend(handles=legend_handles, fontsize=font_size - 2)  # pyright: ignore[reportUnknownArgumentType, reportUnknownMemberType]
+    ax.legend(handles=legend_handles, fontsize=font_size - 2)  # pyright:ignore[reportUnknownArgumentType, reportUnknownMemberType]
     plt.tight_layout()
-    plt.savefig(f"{features['image']}.svg", format="svg", dpi=300, bbox_inches="tight")  # pyright: ignore[reportUnknownMemberType]
-    plt.show(block=False)  # pyright: ignore[reportUnknownMemberType]
+    plt.savefig(f"{features['image']}.svg", format="svg", dpi=300, bbox_inches="tight")  # pyright:ignore[reportUnknownMemberType]
+    plt.show(block=False)  # pyright:ignore[reportUnknownMemberType]
 
 
 def scatter_correlation_plot(
@@ -144,10 +144,10 @@ def scatter_correlation_plot(
     corr_coef = np.corrcoef(list_x, list_y)[0, 1]
 
     plt.style.use("dark_background")
-    fig, ax = plt.subplots(figsize=(8, 6))  # pyright: ignore[reportUnknownMemberType]
+    fig, ax = plt.subplots(figsize=(8, 6))  # pyright:ignore[reportUnknownMemberType]
     fig.patch.set_facecolor("#121212")
 
-    ax.scatter(  # pyright: ignore[reportUnknownMemberType]
+    ax.scatter(  # pyright:ignore[reportUnknownMemberType]
         list_x[: int(len(list_x) / 2)],
         list_y[: int(len(list_x) / 2)],
         alpha=0.7,
@@ -156,7 +156,7 @@ def scatter_correlation_plot(
         s=60,
         label="DeepRL",
     )
-    ax.scatter(  # pyright: ignore[reportUnknownMemberType]
+    ax.scatter(  # pyright:ignore[reportUnknownMemberType]
         list_x[int(len(list_x) / 2) :],
         list_y[int(len(list_x) / 2) :],
         alpha=0.7,
@@ -165,10 +165,10 @@ def scatter_correlation_plot(
         s=60,
         label="Classic",
     )
-    ax.set_title(title, color="white", fontsize=16, pad=20)  # pyright: ignore[reportUnknownMemberType]
-    ax.set_xlabel(xlabel, color="white", fontsize=14, labelpad=20)  # pyright: ignore[reportUnknownMemberType]
-    ax.set_ylabel(ylabel, color="white", fontsize=14, labelpad=20)  # pyright: ignore[reportUnknownMemberType]
-    ax.text(  # pyright: ignore[reportUnknownMemberType]
+    ax.set_title(title, color="white", fontsize=16, pad=20)  # pyright:ignore[reportUnknownMemberType]
+    ax.set_xlabel(xlabel, color="white", fontsize=14, labelpad=20)  # pyright:ignore[reportUnknownMemberType]
+    ax.set_ylabel(ylabel, color="white", fontsize=14, labelpad=20)  # pyright:ignore[reportUnknownMemberType]
+    ax.text(  # pyright:ignore[reportUnknownMemberType]
         0.05,
         0.95,
         f"Corr coef: {corr_coef:.2f}",
@@ -178,13 +178,13 @@ def scatter_correlation_plot(
         verticalalignment="top",
         bbox={"facecolor": "#222222", "alpha": 0.7, "edgecolor": "none"},
     )
-    ax.grid(True, linestyle="--", alpha=0.3)  # pyright: ignore[reportUnknownMemberType]
-    ax.tick_params(colors="white", labelsize=12)  # pyright: ignore[reportUnknownMemberType]
-    ax.legend(fontsize=12)  # pyright: ignore[reportUnknownMemberType]
+    ax.grid(True, linestyle="--", alpha=0.3)  # pyright:ignore[reportUnknownMemberType]
+    ax.tick_params(colors="white", labelsize=12)  # pyright:ignore[reportUnknownMemberType]
+    ax.legend(fontsize=12)  # pyright:ignore[reportUnknownMemberType]
 
     plt.tight_layout()
-    plt.savefig(f"{image_name}.svg", format="svg", dpi=300, bbox_inches="tight")  # pyright: ignore[reportUnknownMemberType]
-    plt.show(block=False)  # pyright: ignore[reportUnknownMemberType]
+    plt.savefig(f"{image_name}.svg", format="svg", dpi=300, bbox_inches="tight")  # pyright:ignore[reportUnknownMemberType]
+    plt.show(block=False)  # pyright:ignore[reportUnknownMemberType]
 
 
 def comparative_evaluation(n_episodes: int, seeds: list[int]) -> None:

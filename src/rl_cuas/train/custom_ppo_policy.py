@@ -40,7 +40,7 @@ class CustomPPOPolicy(ActorCriticPolicy):
         # Disable orthogonal initialization
         kwargs["ortho_init"] = False
         self.actor_critic_kwargs = kwargs.pop("actor_critic_kwargs", {})
-        super().__init__(  # pyright: ignore[reportUnknownMemberType]
+        super().__init__(  # pyright:ignore[reportUnknownMemberType]
             observation_space,
             action_space,
             lr_schedule,
@@ -88,7 +88,7 @@ class CustomMaskablePPOPolicy(MaskableActorCriticPolicy):
         # Disable orthogonal initialization
         kwargs["ortho_init"] = False
         self.actor_critic_kwargs = kwargs.pop("actor_critic_kwargs", {})
-        super().__init__(  # pyright: ignore[reportUnknownMemberType]
+        super().__init__(  # pyright:ignore[reportUnknownMemberType]
             observation_space,
             action_space,
             lr_schedule,

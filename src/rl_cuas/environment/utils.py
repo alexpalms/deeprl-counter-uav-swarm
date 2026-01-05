@@ -193,9 +193,9 @@ def swarm_generate_drone_trajectory(
             The maximum coordinates.
         """
         return Vector3D(
-            np_random.uniform(min_point.coords[0], max_point.coords[0]),  # pyright: ignore[reportUnknownArgumentType]
-            np_random.uniform(min_point.coords[1], max_point.coords[1]),  # pyright: ignore[reportUnknownArgumentType]
-            np_random.uniform(min_point.coords[2], max_point.coords[2]),  # pyright: ignore[reportUnknownArgumentType]
+            np_random.uniform(min_point.coords[0], max_point.coords[0]),  # pyright:ignore[reportUnknownArgumentType]
+            np_random.uniform(min_point.coords[1], max_point.coords[1]),  # pyright:ignore[reportUnknownArgumentType]
+            np_random.uniform(min_point.coords[2], max_point.coords[2]),  # pyright:ignore[reportUnknownArgumentType]
         )
 
     start_point = random_point(spawn_min, spawn_max)

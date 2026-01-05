@@ -58,14 +58,14 @@ if __name__ == "__main__":
         for d in distances
     ]
 
-    plt.figure(figsize=(8, 5))  # pyright: ignore[reportUnknownMemberType]
-    plt.plot(distances, probabilities)  # pyright: ignore[reportUnknownMemberType]
-    plt.scatter(distance_buckets, prob_buckets, color="red", zorder=5)  # pyright: ignore[reportUnknownMemberType]
-    plt.title("Neutralization Probability vs Miss Distance")  # pyright: ignore[reportUnknownMemberType]
-    plt.xlabel("Miss Distance [m]")  # pyright: ignore[reportUnknownMemberType]
-    plt.ylabel("Neutralization Probability")  # pyright: ignore[reportUnknownMemberType]
-    plt.grid(True)  # pyright: ignore[reportUnknownMemberType]
+    plt.figure(figsize=(8, 5))  # pyright:ignore[reportUnknownMemberType]
+    plt.plot(distances, probabilities)  # pyright:ignore[reportUnknownMemberType]
+    plt.scatter(distance_buckets, prob_buckets, color="red", zorder=5)  # pyright:ignore[reportUnknownMemberType]
+    plt.title("Neutralization Probability vs Miss Distance")  # pyright:ignore[reportUnknownMemberType]
+    plt.xlabel("Miss Distance [m]")  # pyright:ignore[reportUnknownMemberType]
+    plt.ylabel("Neutralization Probability")  # pyright:ignore[reportUnknownMemberType]
+    plt.grid(True)  # pyright:ignore[reportUnknownMemberType]
     plt.tight_layout()
     # Save high-res image
-    plt.savefig("neutralization_probability_plot.svg")  # pyright: ignore[reportUnknownMemberType]
-    plt.show()  # pyright: ignore[reportUnknownMemberType]
+    plt.savefig("neutralization_probability_plot.svg")  # pyright:ignore[reportUnknownMemberType]
+    plt.show()  # pyright:ignore[reportUnknownMemberType]

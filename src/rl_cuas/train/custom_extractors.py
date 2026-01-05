@@ -5,7 +5,7 @@ from typing import cast
 import torch as th
 from gymnasium import spaces
 from stable_baselines3.common.preprocessing import (
-    get_flattened_obs_dim,  # pyright: ignore[reportUnknownVariableType]
+    get_flattened_obs_dim,  # pyright:ignore[reportUnknownVariableType]
 )
 from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 from torch import nn
@@ -27,7 +27,7 @@ class CustomFlatExtractor(BaseFeaturesExtractor):
         # We do not know features-dim here before going over all the items,
         # so put something dummy for now. PyTorch requires calling
         # nn.Module.__init__ before adding modules
-        super().__init__(observation_space, features_dim=1)  # pyright: ignore[reportUnknownMemberType]
+        super().__init__(observation_space, features_dim=1)  # pyright:ignore[reportUnknownMemberType]
 
         if len(observation_space.shape) != 1:
             raise ValueError(
@@ -85,7 +85,7 @@ class CustomCombinedExtractor(BaseFeaturesExtractor):
         # We do not know features-dim here before going over all the items,
         # so put something dummy for now. PyTorch requires calling
         # nn.Module.__init__ before adding modules
-        super().__init__(observation_space, features_dim=1)  # pyright: ignore[reportUnknownMemberType]
+        super().__init__(observation_space, features_dim=1)  # pyright:ignore[reportUnknownMemberType]
 
         # Observation flattening
         obs_flatten: dict[str, nn.Module] = {}

@@ -157,7 +157,7 @@ def training(config_file_path: str) -> None:
             )
         starting_steps = int(match.group(1))  # Convert the found number to an integer
 
-        agent = CLASS_REGISTRY_ALGO[train_config["algo"]].load(  # pyright: ignore[reportUnknownMemberType]
+        agent = CLASS_REGISTRY_ALGO[train_config["algo"]].load(  # pyright:ignore[reportUnknownMemberType]
             model_checkpoint_path,
             env=env,
             batch_size=batch_size,
@@ -274,7 +274,7 @@ def training(config_file_path: str) -> None:
 
     # Train the agent
     time_steps = training_stop_config["max_time_steps"]
-    agent.learn(  # pyright: ignore[reportUnknownMemberType]
+    agent.learn(  # pyright:ignore[reportUnknownMemberType]
         total_timesteps=time_steps,
         reset_num_timesteps=reset_num_timesteps,
         callback=callbacks,

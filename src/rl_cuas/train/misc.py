@@ -12,7 +12,7 @@ from gymnasium import Wrapper
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.results_plotter import (
-    load_results,  # pyright: ignore[reportPrivateImportUsage]
+    load_results,  # pyright:ignore[reportPrivateImportUsage]
     ts2xy,
 )
 from stable_baselines3.common.utils import set_random_seed
@@ -89,7 +89,7 @@ def make_sb3_env(
             monitor_dir = os.path.join(monitor_folder, str(rank))
             os.makedirs(monitor_dir, exist_ok=True)
             env = Monitor(env, monitor_dir, allow_early_resets=allow_early_resets)
-            env.reset(seed=seed + rank)  # pyright: ignore[reportUnknownMemberType]
+            env.reset(seed=seed + rank)  # pyright:ignore[reportUnknownMemberType]
             return env
 
         set_random_seed(seed)
@@ -218,7 +218,7 @@ class AutoSave(BaseCallback):
     def _on_step(self) -> bool:
         if self.n_calls % self.check_freq == 0:
             if self.verbose > 0:
-                self.logger.info(f"Saving latest model to {self.save_path_base}")  # pyright: ignore[reportUnknownMemberType]
+                self.logger.info(f"Saving latest model to {self.save_path_base}")  # pyright:ignore[reportUnknownMemberType]
             # Save the agent
             self.model.save(
                 self.save_path_base
@@ -245,14 +245,14 @@ class AutoSave(BaseCallback):
                 if len(mean_rewards) > 0:
                     mean_reward = float(np.mean(mean_rewards))
                     if self.verbose >= 1:
-                        self.logger.info(f"Num timesteps: {self.num_timesteps}")  # pyright: ignore[reportUnknownMemberType]
-                        self.logger.info(  # pyright: ignore[reportUnknownMemberType]
+                        self.logger.info(f"Num timesteps: {self.num_timesteps}")  # pyright:ignore[reportUnknownMemberType]
+                        self.logger.info(  # pyright:ignore[reportUnknownMemberType]
                             f"Best mean reward: {self.best_mean_reward:.2f} - Last mean reward per episode: {mean_reward:.2f}"
                         )
                     if mean_reward > self.best_mean_reward:
                         self.best_mean_reward = mean_reward
                         if self.verbose >= 1:
-                            self.logger.info(  # pyright: ignore[reportUnknownMemberType]
+                            self.logger.info(  # pyright:ignore[reportUnknownMemberType]
                                 f"Saving new best model to {self.save_path_base}"
                             )
                         self.model.save(self.save_path_base / self.filename_best)

@@ -39,7 +39,7 @@ class DeepRlAgent(Agent):
                     f"Cannot create agent, policy file '{model_path}' not found!"
                 )
 
-            self.agent = MaskablePPO.load(model_path, device="cpu")  # pyright: ignore[reportUnknownMemberType]
+            self.agent = MaskablePPO.load(model_path, device="cpu")  # pyright:ignore[reportUnknownMemberType]
 
     def get_action(self, obs: dict[str, np.ndarray]) -> np.ndarray:
         """
