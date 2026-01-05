@@ -11,7 +11,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.collections import PathCollection
 from matplotlib.lines import Line2D
-from mpl_toolkits.mplot3d import art3d  # type: ignore
+from mpl_toolkits.mplot3d import art3d  # pyright:ignore[reportMissingTypeStubs]
 
 from rl_cuas.environment.base_classes import (
     BoundingBox,
@@ -479,8 +479,8 @@ class ScenarioRenderer:
             self.plot_frame.grid_columnconfigure(0, weight=1)
 
             # Create a canvas for the matplotlib plot
-            self.canvas = FigureCanvasTkAgg(self.fig, master=self.plot_frame)  # type: ignore
-            self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)  # type: ignore
+            self.canvas = FigureCanvasTkAgg(self.fig, master=self.plot_frame)
+            self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
             # Add the plot frame to the PanedWindow
             self.paned_window.add(self.plot_frame)  # pyright: ignore[reportUnknownMemberType]
@@ -929,7 +929,7 @@ class ScenarioRenderer:
             The color of the circle.
         """
         # Plot circles on the ground at z=0
-        circle = plt.Circle((center_x, center_y), radius, color=color, alpha=0.5)  # type: ignore
+        circle = plt.Circle((center_x, center_y), radius, color=color, alpha=0.5)  # pyright: ignore[reportPrivateImportUsage]
         self.ax.add_patch(circle)
         art3d.pathpatch_2d_to_3d(circle, z=int(altitude), zdir="z")  # pyright: ignore[reportUnknownMemberType]
 
@@ -943,7 +943,7 @@ class ScenarioRenderer:
             The bounding box of the square.
         """
         # Draw a square at z=0
-        square = plt.Rectangle((-5, -5), 10, 10, color=self.base_line_color, alpha=0.3)  # type: ignore
+        square = plt.Rectangle((-5, -5), 10, 10, color=self.base_line_color, alpha=0.3)  # pyright: ignore[reportPrivateImportUsage]
         self.ax.add_patch(square)
         art3d.pathpatch_2d_to_3d(square, z=-10, zdir="z")  # pyright: ignore[reportUnknownMemberType]
 
@@ -1262,7 +1262,7 @@ class ScenarioRenderer:
         """Update the plot."""
         # Redraw the plot
         if self.canvas is not None:
-            self.canvas.draw()  # type: ignore
+            self.canvas.draw()
 
         # Only update Tk if in human render mode
         if self.render_mode == "human" and self.master is not None:
@@ -1280,7 +1280,7 @@ class ScenarioRenderer:
         # Draw the figure to a canvas
         buf = np.array([])
         if self.canvas is not None:
-            self.canvas.draw()  # type: ignore
+            self.canvas.draw()
 
             # Get the RGB buffer from the figure - for FigureCanvasAgg
             buf = np.array(self.canvas.renderer.buffer_rgba())

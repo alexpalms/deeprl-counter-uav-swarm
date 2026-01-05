@@ -8,7 +8,7 @@ from typing import Any
 
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.stats import norm  # type: ignore
+from scipy.stats import norm  # pyright: ignore[reportMissingTypeStubs]
 
 from rl_cuas.evaluation.evaluation import evaluation
 
@@ -89,7 +89,7 @@ def bucket_and_plot(values: dict[str, list[float]], features: dict[str, str]) ->
 
         # Add legend entry for Gaussian curve with mean and std
         legend_handles.append(  # pyright: ignore[reportUnknownMemberType]
-            plt.Line2D(  # type: ignore
+            plt.Line2D(  # pyright: ignore[reportPrivateImportUsage]
                 [0],
                 [0],
                 color=base_color,
@@ -105,11 +105,11 @@ def bucket_and_plot(values: dict[str, list[float]], features: dict[str, str]) ->
     ):
         legend_handles.insert(  # pyright: ignore[reportUnknownMemberType]
             0,
-            plt.Rectangle(  # type: ignore
+            plt.Rectangle(  # pyright: ignore[reportPrivateImportUsage]
                 (0, 0),
                 1,
                 1,
-                color=bar.patches[0].get_facecolor(),  # type: ignore
+                color=bar.patches[0].get_facecolor(),  # pyright: ignore[reportUnknownMemberType,reportUnknownArgumentType,reportAttributeAccessIssue]
                 alpha=0.6,
                 label=group_name + " Histogram",
             ),

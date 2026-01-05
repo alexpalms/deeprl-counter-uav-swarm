@@ -306,10 +306,10 @@ class Environment(gym.Env[dict[str, np.ndarray], np.ndarray]):
 
         # Sample drone parameters using vectorized operations
         for key in ["max_speed", "explosive", "chassis"]:
-            sampled_parameters[key] = self.np_random.choice(  # type: ignore
-                self.swarm_drones_features[key][0],  # type: ignore
+            sampled_parameters[key] = self.np_random.choice(  # pyright:ignore[reportArgumentType]
+                cast(list[Any], self.swarm_drones_features[key][0]),
                 size=self.swarm_drones_num,
-                p=self.swarm_drones_features[key][1],  # type: ignore
+                p=cast(list[float], self.swarm_drones_features[key][1]),
             )
 
         # Precompute zone indices
@@ -371,14 +371,14 @@ class Environment(gym.Env[dict[str, np.ndarray], np.ndarray]):
             chassis = cast(
                 ChassisType,
                 np_random.choice(
-                    swarm_drones_features["chassis"][0],  # type: ignore
+                    cast(list[int], swarm_drones_features["chassis"][0]),
                     p=detections_features["chassis_classification"][drone.chassis],
                 ),
             )
             explosive = cast(
                 ExplosiveType,
                 np_random.choice(
-                    swarm_drones_features["explosive"][0],  # type: ignore
+                    cast(list[int], swarm_drones_features["explosive"][0]),
                     p=detections_features["explosive_classification"][drone.explosive],
                 ),
             )
