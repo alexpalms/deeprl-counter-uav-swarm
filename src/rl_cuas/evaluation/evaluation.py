@@ -95,7 +95,7 @@ def evaluation(
             episode_counter += 1
             cumulative_reward.append(0.0)
 
-    env.close()  # type: ignore
+    env.close()
 
     if n_episodes > 1:
         logger.info("==========================")

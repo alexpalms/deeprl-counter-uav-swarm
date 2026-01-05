@@ -11,7 +11,7 @@ import numpy as np
 from gymnasium import Wrapper
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.monitor import Monitor
-from stable_baselines3.common.results_plotter import (  # type: ignore
+from stable_baselines3.common.results_plotter import (
     load_results,  # pyright: ignore[reportPrivateImportUsage]
     ts2xy,
 )
