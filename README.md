@@ -20,7 +20,7 @@
 
 <p align="center">
 <img src="https://img.shields.io/badge/supported%20os-linux-blue" alt="Supported OS"/>
-<img src="https://img.shields.io/badge/python-%3E%3D3.12-blue" alt="Python Version"/>
+<img src="https://img.shields.io/badge/python-%3E%3D3.12-blue?logo=python" alt="Python Version"/>
 <img src="https://img.shields.io/github/last-commit/alexpalms/deeprl-counter-uav-swarm/main?label=repo%20latest%20update&logo=readthedocs" alt="Latest Repo Update"/>
 </p>
 <p align="center">
