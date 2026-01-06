@@ -1,4 +1,4 @@
-name: Type Hints Checks
+name: Code Checks
 
 on:
   workflow_dispatch:
@@ -8,8 +8,8 @@ on:
     branches: [main]
 
 jobs:
-  type-hints-checks:
-    name: Type Hints Checks
+  code-checks:
+    name: Code Checks
     runs-on: ubuntu-latest
 
     steps:
@@ -21,8 +21,14 @@ jobs:
         with:
           version: "latest"
 
-      - name: Install dependencies
-        run: uv sync --dev
+      - name: Install package
+        run: uv sync
 
-      - name: Run pyright
+      - name: Run Ruff check
+        run: uv run ruff check .
+
+      - name: Run Ruff formatting check
+        run: uv run ruff format --check .
+
+      - name: Run pyright check
         run: uv run pyright

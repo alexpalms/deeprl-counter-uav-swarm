@@ -13,13 +13,8 @@
 </p>
 
 <p align="center">
-<img src="https://img.shields.io/badge/linting-ruff-4B8BBE?logo=python&logoColor=white" alt="Code Formatting"/>
-<img src="https://img.shields.io/badge/testing-pytest-2A6DB0?logo=python&logoColor=white" alt="Pytest"/>
-</p>
-<p align="center">
-<a href="https://github.com/alexpalms/deeprl-counter-uav-swarm/actions/workflows/type-hints-check.yaml"><img src="https://img.shields.io/github/actions/workflow/status/alexpalms/deeprl-counter-uav-swarm/type-hints-check.yaml?label=type%20hints&logo=github" alt="Type Hints"/></a>
-<a href="https://github.com/alexpalms/deeprl-counter-uav-swarm/actions/workflows/code-formatting-check.yaml"><img src="https://img.shields.io/github/actions/workflow/status/alexpalms/deeprl-counter-uav-swarm/code-formatting-check.yaml?label=code%20formatting&logo=github" alt="Code Formatting"/></a>
-<a href="https://github.com/alexpalms/deeprl-counter-uav-swarm/actions/workflows/pytest.yaml"><img src="https://img.shields.io/github/actions/workflow/status/alexpalms/deeprl-counter-uav-swarm/pytest.yaml?label=pytest&logo=github" alt="Pytest"/></a>
+<a href="https://github.com/alexpalms/deeprl-counter-uav-swarm/actions/workflows/code-checks.yaml"><img src="https://img.shields.io/github/actions/workflow/status/alexpalms/deeprl-counter-uav-swarm/code-checks.yaml?label=code%20checks%20(ruff%20%26%20pyright)&logo=github" alt="Code Checks"/></a>
+<a href="https://github.com/alexpalms/deeprl-counter-uav-swarm/actions/workflows/pytest.yaml"><img src="https://img.shields.io/github/actions/workflow/status/alexpalms/deeprl-counter-uav-swarm/pytest.yaml?label=tests%20(pytest)&logo=github" alt="Pytest"/></a>
 <a href="https://codecov.io/github/alexpalms/deeprl-counter-uav-swarm"><img src="https://codecov.io/github/alexpalms/deeprl-counter-uav-swarm/graph/badge.svg?token=4817P3HFDN" alt="PytestCoverage"/></a>
 </p>
 
@@ -46,9 +41,7 @@ The RL agents are trained to prioritize drone targets based on their potential t
 **Everything in this guide will assume you are using Linux OS**
 
 - Install `uv` ([Ref](https://github.com/astral-sh/uv)) (E.g. `curl -LsSf https://astral.sh/uv/install.sh | sh`)
-- Create a new virtual Python environment: `uv venv`
-- Install package with dependencies `uv pip install -e .`
-- (Optional) Install package with group dependencies `uv pip install -e . --group dev`
+- Install package: `uv sync`
 
 ## Simulator
 
